@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+				 xmlns="http://maven.apache.org/POM/4.0.0"
+				 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+>
+	<modelVersion>4.0.0</modelVersion>
+	<packaging>pom</packaging>
+
+	<groupId>org.corefx.callr</groupId>
+	<artifactId>callr</artifactId>
+	<version>1.0.0-SNAPSHOT</version>
+
+	<modules>
+		<module>callr-hub</module>
+		<module>callr-hub-host</module>
+		<module>callr-common</module>
+		<module>callr-client</module>
+		<module>callr-client-test</module>
+	</modules>
+
+	<properties>
+		<java.version>17</java.version>
+		<maven.compiler.source>17</maven.compiler.source>
+		<maven.compiler.target>17</maven.compiler.target>
+		<atmosphere-version>2.7.2</atmosphere-version>
+	</properties>
+
+</project>
