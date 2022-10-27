@@ -23,7 +23,6 @@ public class CallRHub {
 		@Override
 		public void afterConnectionEstablished(WebSocketSession session) {
 			log.info("Connection established: [" + session.getId() + "]");
-			// sessions.put(session.getId(), session);
 		}
 
 
