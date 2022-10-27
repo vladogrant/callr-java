@@ -1,26 +1,29 @@
 package org.corefx.callr.hub;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.socket.CloseStatus;
-import org.springframework.web.socket.WebSocketHandler;
-import org.springframework.web.socket.WebSocketMessage;
-import org.springframework.web.socket.WebSocketSession;
+import org.corefx.callr.ExceptionInfo;
+import org.corefx.callr.ResponseMessage;
+import org.corefx.callr.RpcMessage;
+import org.corefx.callr.SenderMessage;
+import org.springframework.web.socket.*;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Slf4j
 public class CallRHub {
 
-	private final Map<String, WebSocketSession> sessions = new HashMap<>();
+	private final Map<UUID, WebSocketSession> sessions = new HashMap<>();
 
 	private final WebSocketHandler webSocketHandler = new WebSocketHandler() {
 
 		@Override
 		public void afterConnectionEstablished(WebSocketSession session) {
 			log.info("Connection established: [" + session.getId() + "]");
-			sessions.put(session.getId(), session);
+			// sessions.put(session.getId(), session);
 		}
 
 
@@ -28,7 +31,30 @@ public class CallRHub {
 		@SneakyThrows
 		public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
 			log.info("Message received: [" + session.getId() + "] " + message);
-			session.sendMessage(message);
+			SenderMessage m = new ObjectMapper().readValue(message.getPayload().toString(), SenderMessage.class);
+			if(SenderMessage.class.equals(m.getClass())) {
+				UUID sender = m.getSender();
+				if(!sessions.containsKey(sender))
+					sessions.put(sender, session);
+			}
+			else {
+				RpcMessage rpcm = (RpcMessage) m;
+				UUID receiver = rpcm.getReceiver();
+				WebSocketSession receiverSession = sessions.get(receiver);
+				if(receiverSession == null) {
+					RuntimeException ex = new RuntimeException("Receiver " + receiver + " is not registered within the hub");
+					ResponseMessage response = new ResponseMessage();
+					response.setReceiver(m.getSender());
+					ExceptionInfo exi = new ExceptionInfo();
+					exi.setData(new ObjectMapper().writeValueAsString(ex));
+					exi.setType(ex.getClass().getName());
+					response.setException(exi);
+					session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(response)));
+				}
+				else {
+					receiverSession.sendMessage(message);
+				}
+			}
 		}
 
 

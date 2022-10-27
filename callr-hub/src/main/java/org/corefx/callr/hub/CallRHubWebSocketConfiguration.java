@@ -1,9 +1,7 @@
-package org.corefx.callr.hub.host;
-
+package org.corefx.callr.hub;
 
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.corefx.callr.hub.CallRHub;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.HttpRequestHandler;
@@ -33,9 +31,6 @@ public class CallRHubWebSocketConfiguration {
 		log.info("Getting Callr Hub WebSocket Handler Bean");
 		return callrHub().getWebSocketHandler();
 	}
-
-
-	;
 
 
 	@Bean
@@ -71,7 +66,7 @@ public class CallRHubWebSocketConfiguration {
 
 
 	@Bean
-	HandlerMapping WebSocketHandlerMapping() {
+	HandlerMapping webSocketHandlerMapping() {
 		log.info("Creating CallR Hub WebSocket Handler Mapping Bean");
 		return new SimpleUrlHandlerMapping(Map.of("/", callrHubWebSocketHandler()), -1);
 	}

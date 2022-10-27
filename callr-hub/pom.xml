@@ -25,36 +25,42 @@
     </dependency>
 
     <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-databind</artifactId>
-      <version>2.13.4.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.projectlombok</groupId>
-      <artifactId>lombok</artifactId>
-      <version>1.18.24</version>
-      <scope>compile</scope>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-webmvc</artifactId>
     </dependency>
 
     <dependency>
       <groupId>org.springframework</groupId>
       <artifactId>spring-websocket</artifactId>
-      <version>5.3.23</version>
     </dependency>
+
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <version>5.3.23</version>
-      <scope>compile</scope>
+      <artifactId>spring-messaging</artifactId>
     </dependency>
+
     <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-      <version>5.3.23</version>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-databind</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
       <scope>compile</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
 
   </dependencies>
 

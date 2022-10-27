@@ -36,7 +36,7 @@ public class CallRClient {
 
 			@Override
 			public void handleTransportError(WebSocketSession session, Throwable exception) {
-
+				log.error(exception.getMessage(), exception);
 			}
 
 
