@@ -9,16 +9,16 @@ import java.lang.reflect.Method;
 @Slf4j
 public abstract class CallRServiceBase {
 
-	CallRClient CallRClient;
+	CallRClient client;
 
 
-	protected CallRServiceBase(CallRClient CallRClient) {
-		this.CallRClient = CallRClient;
+	protected CallRServiceBase(CallRClient client) {
+		this.client = client;
 	}
 
 
 	public void start() {
-		CallRClient.onMessage(message -> {
+		client.onMessage(message -> {
 			RequestMessage request = (RequestMessage) message;
 			Class<?>[] parameterTypes = new Class<?>[request.getParameters().size()];
 			for(int i = 0; i < request.getParameters().size(); i++) {
@@ -40,7 +40,7 @@ public abstract class CallRServiceBase {
 			}
 			Object[] parameterValues = request.getParameters().stream().map(p -> p.getValue()).toArray();
 			ResponseMessage response = new ResponseMessage();
-			response.setSender(CallRClient.getId());
+			response.setSender(client.getId());
 			response.setReceiver(request.getSender());
 			response.setRequestId(request.getRequestId());
 			try {
@@ -66,9 +66,9 @@ public abstract class CallRServiceBase {
 */
 				response.setException(ex);
 			}
-			CallRClient.send(response);
+			client.send(response);
 		});
-		CallRClient.connect();
+		client.connect();
 	}
 
 

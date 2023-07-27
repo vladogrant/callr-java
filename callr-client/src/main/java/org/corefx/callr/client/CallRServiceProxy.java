@@ -12,7 +12,7 @@ import java.util.concurrent.TimeoutException;
 
 public abstract class CallRServiceProxy {
 
-	private final CallRClient callRClient;
+	private final CallRClient client;
 
 	private final UUID serviceId;
 
@@ -21,11 +21,11 @@ public abstract class CallRServiceProxy {
 	private final Map<UUID, ResponseMessage> responseRegistry = new HashMap<>();
 
 
-	protected CallRServiceProxy(UUID serviceId, CallRClient CallRClient) {
+	protected CallRServiceProxy(UUID serviceId, CallRClient client) {
 		this.serviceId = serviceId;
-		this.callRClient = CallRClient;
+		this.client = client;
 
-		CallRClient.onMessage(message -> {
+		client.onMessage(message -> {
 			ResponseMessage response = (ResponseMessage) message;
 			if(!waitHandles.containsKey(response.getRequestId()))
 				return;
@@ -35,7 +35,7 @@ public abstract class CallRServiceProxy {
 				waitHandle.notifyAll();
 			}
 		});
-		CallRClient.connect();
+		client.connect();
 	}
 
 
@@ -44,17 +44,17 @@ public abstract class CallRServiceProxy {
 		UUID requestId = UUID.randomUUID();
 		RequestMessage request = new RequestMessage();
 		request.setReceiver(serviceId);
-		request.setSender(callRClient.getId());
+		request.setSender(client.getId());
 		request.setRequestId(requestId);
 		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 		String methodName = stackTraceElements[2].getMethodName();
 		request.setOperation(methodName);
 		request.getParameters().addAll(Arrays.stream(parameters).toList());
-		callRClient.send(request);
+		client.send(request);
 		Object waitHandle = new Object();
 		waitHandles.put(requestId, waitHandle);
 		synchronized(waitHandle) {
-			waitHandle.wait();//git );
+			waitHandle.wait();
 		}
 		waitHandles.remove(requestId);
 		ResponseMessage response = responseRegistry.get(requestId);
