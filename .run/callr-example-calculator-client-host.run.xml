@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="callr-hub-host" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <module name="callr-hub-host" />
-    <option name="SPRING_BOOT_MAIN_CLASS" value="org.corefx.callr.hub.host.CallRHubHostApplication" />
+  <configuration default="false" name="callr-example-calculator-client-host" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
+    <module name="callr-example-calculator-client-host" />
+    <option name="SPRING_BOOT_MAIN_CLASS" value="org.corefx.callr.example.calculator.client.host.CalculatorClientHost" />
     <extension name="net.ashald.envfile">
       <option name="IS_ENABLED" value="false" />
       <option name="IS_SUBST" value="false" />

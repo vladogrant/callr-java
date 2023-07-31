@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: callr-example-calculator-client
+  main:
+    web-application-type: none
+
+callr:
+  protocol: ws
+  host: localhost
+  port: 8080
+  path: /
+  uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}

@@ -1,6 +1,5 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="callr-client-test" type="SpringBootApplicationConfigurationType" factoryName="Spring Boot">
-    <option name="ACTIVE_PROFILES" />
     <module name="callr-client-test" />
     <option name="SPRING_BOOT_MAIN_CLASS" value="org.corefx.callr.client.test.CallRClientTestApplication" />
     <extension name="net.ashald.envfile">

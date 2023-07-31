@@ -2,5 +2,5 @@ callr:
   protocol: ws
   host: localhost
   port: 8080
-  path: /messaging
+  path: /
   uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}

@@ -19,11 +19,19 @@
 	<version>1.0.0-SNAPSHOT</version>
 
 	<modules>
+
+		<module>callr-common</module>
 		<module>callr-hub</module>
 		<module>callr-hub-host</module>
-		<module>callr-common</module>
 		<module>callr-client</module>
 		<module>callr-client-test</module>
+
+		<module>callr-example-calculator</module>
+		<module>callr-example-calculator-service</module>
+		<module>callr-example-calculator-service-host</module>
+		<module>callr-example-calculator-client</module>
+		<module>callr-example-calculator-client-host</module>
+
 	</modules>
 
 	<properties>
