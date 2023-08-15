@@ -14,15 +14,12 @@ import java.util.UUID;
 public class ResponseMessage extends RpcMessage {
 	@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, visible = true)
 	private Object result;
-	/*
-		private ExceptionInfo exception;
-	*/
+
 	@JsonTypeInfo(use = JsonTypeInfo.Id.CLASS, visible = true)
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private Exception exception;
 
 	private byte[] exceptionData;
-
 
 	public ResponseMessage(UUID sender, UUID receiver, UUID request) {
 		super(sender, receiver, request);

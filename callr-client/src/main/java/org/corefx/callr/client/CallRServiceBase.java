@@ -1,5 +1,4 @@
 package org.corefx.callr.client;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.corefx.callr.RequestMessage;
 import org.corefx.callr.ResponseMessage;

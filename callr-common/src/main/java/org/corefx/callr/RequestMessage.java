@@ -15,7 +15,7 @@ public class RequestMessage extends RpcMessage {
 	private ArrayList<Parameter> parameters = new ArrayList<>();
 
 
-	public RequestMessage(UUID sender, UUID receiver, UUID requestId) {
-		super(sender, receiver, requestId);
+	public RequestMessage(UUID sender, UUID receiver, UUID request) {
+		super(sender, receiver, request);
 	}
 }
