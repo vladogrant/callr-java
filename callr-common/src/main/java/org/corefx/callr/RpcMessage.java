@@ -11,13 +11,13 @@ import java.util.UUID;
 @EqualsAndHashCode(callSuper = true)
 public abstract class RpcMessage extends CallRMessage {
 	private UUID receiver;
-	private UUID requestId;
+	private UUID request;
 
 
-	protected RpcMessage(UUID sender, UUID receiver, UUID requestId) {
+	protected RpcMessage(UUID sender, UUID receiver, UUID request) {
 		super(sender);
 		this.receiver = receiver;
-		this.requestId = requestId;
+		this.request = request;
 	}
 
 }

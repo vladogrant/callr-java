@@ -1,6 +1,5 @@
 package org.corefx.callr.client.test;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.corefx.callr.RequestMessage;
 import org.corefx.callr.CallRMessage;
@@ -8,7 +7,6 @@ import org.corefx.callr.client.CallRClient;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.socket.TextMessage;
 
 import java.net.URI;
 import java.util.UUID;
@@ -38,7 +36,7 @@ public class CallRClientTestApplication implements CommandLineRunner {
 		RequestMessage requestMessage = new RequestMessage();
 		requestMessage.setSender(sender);
 		requestMessage.setReceiver(sender);
-		requestMessage.setRequestId(UUID.randomUUID());
+		requestMessage.setRequest(UUID.randomUUID());
 		requestMessage.setOperation("Add");
 		client.send(requestMessage);
 		System.in.read();

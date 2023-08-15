@@ -1,8 +1,10 @@
 package org.corefx.callr.client;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.corefx.callr.RequestMessage;
 import org.corefx.callr.ResponseMessage;
 
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
@@ -42,7 +44,7 @@ public abstract class CallRServiceBase {
 			ResponseMessage response = new ResponseMessage();
 			response.setSender(client.getId());
 			response.setReceiver(request.getSender());
-			response.setRequestId(request.getRequestId());
+			response.setRequest(request.getRequest());
 			try {
 				Object result = method.invoke(this, parameterValues);
 				response.setResult(result);
@@ -50,21 +52,17 @@ public abstract class CallRServiceBase {
 			catch(Exception ex) {
 				if(ex instanceof InvocationTargetException)
 					ex = (Exception) ((InvocationTargetException)ex).getTargetException();
-/*
-				ExceptionInfo exi = new ExceptionInfo();
-				String exceptionData;
-				try {
-					exceptionData = new ObjectMapper().writeValueAsString(ex);
+				log.error(ex.getMessage(), ex);
+				response.setException(ex);
+				try(ByteArrayOutputStream os = new ByteArrayOutputStream(); ObjectOutputStream ow = new ObjectOutputStream(os)) {
+					ow.writeObject(ex);
+					response.setExceptionData(os.toByteArray());
 				}
-				catch(JsonProcessingException e) {
-					log.error(e.getMessage(), e);
+				catch(IOException e) {
 					throw new RuntimeException(e);
 				}
-				exi.setData(exceptionData);
-				exi.setType(ex.getClass().getName());
-				response.setException(exi);
-*/
-				response.setException(ex);
+
+
 			}
 			client.send(response);
 		});

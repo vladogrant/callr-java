@@ -21,9 +21,11 @@ public class ResponseMessage extends RpcMessage {
 	@JsonIgnoreProperties(ignoreUnknown = true)
 	private Exception exception;
 
+	private byte[] exceptionData;
 
-	public ResponseMessage(UUID sender, UUID receiver, UUID requestId) {
-		super(sender, receiver, requestId);
+
+	public ResponseMessage(UUID sender, UUID receiver, UUID request) {
+		super(sender, receiver, request);
 	}
 
 }

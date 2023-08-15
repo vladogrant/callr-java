@@ -21,4 +21,10 @@ public class CalculatorService extends CallRServiceBase implements Calculator {
 		return a + b;
 	}
 
+
+	@Override
+	public int div(Integer a, Integer b) {
+		return a / b;
+	}
+
 }

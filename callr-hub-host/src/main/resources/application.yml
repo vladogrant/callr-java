@@ -1,6 +1,15 @@
+spring:
+  main:
+    banner-mode: off
+
 callr:
   protocol: ws
   host: localhost
   port: 8080
   path: /
   uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}
+
+logging:
+  level:
+    root: error
+    org.corefx.callr: debug

@@ -1,5 +1,7 @@
 package org.corefx.callr.hub;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
@@ -8,7 +10,9 @@ import org.corefx.callr.ResponseMessage;
 import org.corefx.callr.RpcMessage;
 import org.springframework.web.socket.*;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -18,10 +22,11 @@ public class CallRHub implements WebSocketHandler {
 
 	private final Map<UUID, WebSocketSession> sessions = new HashMap<>();
 
+
 	@Override
 	public void afterConnectionEstablished(WebSocketSession session) {
-		session.setTextMessageSizeLimit(10*1024*1024);
-		session.setBinaryMessageSizeLimit(10*1024*1024);
+		session.setTextMessageSizeLimit(10 * 1024 * 1024);
+		session.setBinaryMessageSizeLimit(10 * 1024 * 1024);
 		log.info("Connection established: [" + session.getId() + "]");
 	}
 
@@ -32,7 +37,9 @@ public class CallRHub implements WebSocketHandler {
 
 		CallRMessage m;
 		try {
-			m = new ObjectMapper().readValue(message.getPayload().toString(), CallRMessage.class);
+			ObjectMapper objectMapper = new ObjectMapper();
+			String payload = message.getPayload().toString();
+			m = objectMapper.readValue(payload, CallRMessage.class);
 		}
 		catch(JsonProcessingException e) {
 			log.error(e.getMessage(), e);
@@ -69,21 +76,18 @@ public class CallRHub implements WebSocketHandler {
 		RuntimeException ex = new RuntimeException("Receiver " + receiver + " is not registered within the hub");
 		ResponseMessage response = new ResponseMessage();
 		response.setReceiver(m.getSender());
-/*
-			ExceptionInfo exi = new ExceptionInfo();
-			try {
-				exi.setData(new ObjectMapper().writeValueAsString(ex));
-			}
-			catch(JsonProcessingException e) {
-				log.error(e.getMessage(), e);
-				throw new RuntimeException(e);
-			}
-			exi.setType(ex.getClass().getName());
-			response.setException(exi);
-*/
 		response.setException(ex);
+		try(ByteArrayOutputStream os = new ByteArrayOutputStream(); ObjectOutputStream ow = new ObjectOutputStream(os)) {
+			ow.writeObject(ex);
+			response.setExceptionData(os.toByteArray());
+		}
+		catch(IOException e) {
+			throw new RuntimeException(e);
+		}
 		try {
-			session.sendMessage(new TextMessage(new ObjectMapper().writeValueAsString(response)));
+			ObjectMapper objectMapper = new ObjectMapper();
+			String payload = objectMapper.writeValueAsString(response);
+			session.sendMessage(new TextMessage(payload));
 		}
 		catch(IOException e) {
 			log.error(e.getMessage(), e);

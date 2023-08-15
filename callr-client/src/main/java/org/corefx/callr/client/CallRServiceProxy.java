@@ -4,6 +4,8 @@ import org.corefx.callr.Parameter;
 import org.corefx.callr.RequestMessage;
 import org.corefx.callr.ResponseMessage;
 
+import java.io.ByteArrayInputStream;
+import java.io.ObjectInputStream;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,10 +29,10 @@ public abstract class CallRServiceProxy {
 
 		client.onMessage(message -> {
 			ResponseMessage response = (ResponseMessage) message;
-			if(!waitHandles.containsKey(response.getRequestId()))
+			if(!waitHandles.containsKey(response.getRequest()))
 				return;
-			responseRegistry.put(response.getRequestId(), response);
-			Object waitHandle = waitHandles.get(response.getRequestId());
+			responseRegistry.put(response.getRequest(), response);
+			Object waitHandle = waitHandles.get(response.getRequest());
 			synchronized(waitHandle) {
 				waitHandle.notifyAll();
 			}
@@ -45,7 +47,7 @@ public abstract class CallRServiceProxy {
 		RequestMessage request = new RequestMessage();
 		request.setReceiver(serviceId);
 		request.setSender(client.getId());
-		request.setRequestId(requestId);
+		request.setRequest(requestId);
 		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
 		String methodName = stackTraceElements[2].getMethodName();
 		request.setOperation(methodName);
@@ -60,18 +62,11 @@ public abstract class CallRServiceProxy {
 		ResponseMessage response = responseRegistry.get(requestId);
 		if(response == null)
 			throw new TimeoutException();
-		if(response.getException() != null) {
-			Exception ex;
-/*
-			String exceptionTypeName = response.getException().getType();
-			Class<Exception> exceptionType = (Class<Exception>)Class.forName(exceptionTypeName);
-			ObjectMapper objectMapper = new ObjectMapper();
-			objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
-			ex = objectMapper.readValue(response.getException().getData(), exceptionType);
-*/
-			ex = response.getException();
-			throw ex;
+		if(response.getExceptionData() != null) {
+			try(ByteArrayInputStream ir = new ByteArrayInputStream(response.getExceptionData()); ObjectInputStream is = new ObjectInputStream(ir)) {
+				Exception ex = (Exception) is.readObject();
+				throw ex;
+			}
 		}
 		return response.getResult();
 	}

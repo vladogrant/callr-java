@@ -1,7 +1,10 @@
 package org.corefx.callr.client;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.corefx.callr.CallRMessage;
@@ -51,7 +54,8 @@ public class CallRClient {
 					CallRMessage m = new CallRMessage(id);
 					String payload;
 					try {
-						payload = new ObjectMapper().writeValueAsString(m);
+						ObjectMapper objectMapper = new ObjectMapper();
+						payload = objectMapper.writeValueAsString(m);
 					}
 					catch(JsonProcessingException e) {
 						log.error(e.getMessage(), e);
@@ -70,16 +74,19 @@ public class CallRClient {
 				@Override
 				public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
 					log.info("Message received: [" + session.getId() + "] " + message);
+					String payload = message.getPayload().toString();
+					log.debug(payload);
 					CallRMessage m;
 					try {
-						m = new ObjectMapper().readValue(message.getPayload().toString(), CallRMessage.class);
+						ObjectMapper objectMapper = new ObjectMapper();
+						m = objectMapper.readValue(payload, CallRMessage.class);
+						if(messageHandler != null)
+							messageHandler.accept(m);
 					}
 					catch(JsonProcessingException e) {
 						log.error(e.getMessage(), e);
 						throw new RuntimeException(e);
 					}
-					if(messageHandler != null)
-						messageHandler.accept(m);
 				}
 
 
@@ -113,19 +120,18 @@ public class CallRClient {
 
 
 	public void send(CallRMessage m) {
-		String payload = null;
+		String payload;
 		try {
-			payload = new ObjectMapper().writeValueAsString(m);
-		}
-		catch(JsonProcessingException e) {
-			log.error(e.getMessage(), e);
-			throw new RuntimeException(e);
-		}
-		try {
+			ObjectMapper objectMapper = new ObjectMapper();
+			payload = objectMapper.writeValueAsString(m);
 			TextMessage message = new TextMessage(payload);
 			session.sendMessage(message);
 			log.info("Message sent: [" + session.getId() + "] " + message);
 			log.debug(payload);
+		}
+		catch(JsonProcessingException e) {
+			log.error(e.getMessage(), e);
+			throw new RuntimeException(e);
 		}
 		catch(IOException e) {
 			log.error(e.getMessage(), e);

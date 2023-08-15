@@ -4,4 +4,6 @@ public interface Calculator {
 	void ping();
 
 	int add(Integer a, Integer b);
+
+	int div(Integer a, Integer b);
 }

@@ -3,6 +3,7 @@ spring:
     name: callr-example-calculator-service
   main:
     web-application-type: none
+    banner-mode: off
 
 callr:
   protocol: ws
@@ -10,3 +11,8 @@ callr:
   port: 8080
   path: /
   uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}
+
+logging:
+  level:
+    root: error
+    org.corefx.callr: debug

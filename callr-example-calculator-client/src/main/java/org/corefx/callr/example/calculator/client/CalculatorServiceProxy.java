@@ -28,4 +28,13 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 		);
 	}
 
+
+	@Override
+	public int div(Integer a, Integer b) {
+		return (int)invoke(
+				new Parameter("a", Integer.class.getName(), a),
+				new Parameter("b", Integer.class.getName(), b)
+		);
+	}
+
 }
