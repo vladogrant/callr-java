@@ -29,10 +29,10 @@ public class CalculatorClientHost implements CommandLineRunner {
 		CallRClient client = new CallRClient(UUID.randomUUID(), new URI("ws://localhost:8080"));
 		Calculator calculator = new CalculatorServiceProxy(client, UUID.fromString("00000000-0000-0000-0000-A736F2F2FAD2"));
 		// calculator.ping();
-		int a = 1;
-		int b = 0;
+		double a = 1;
+		double b = 3;
 		try {
-			int c = calculator.div(a, b);
+			double c = calculator.div(a, b);
 			System.out.println(c);
 		}
 		catch(Exception ex) {

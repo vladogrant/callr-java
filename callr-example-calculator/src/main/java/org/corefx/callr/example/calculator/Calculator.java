@@ -6,4 +6,6 @@ public interface Calculator {
 	int add(Integer a, Integer b);
 
 	int div(Integer a, Integer b);
+
+	double div(Double a, Double b);
 }

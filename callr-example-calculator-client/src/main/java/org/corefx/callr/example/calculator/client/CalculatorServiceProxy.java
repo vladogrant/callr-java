@@ -37,4 +37,13 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 		);
 	}
 
+
+	@Override
+	public double div(Double a, Double b) {
+		return (double)invoke(
+				new Parameter("a", Double.class.getName(), a),
+				new Parameter("b", Double.class.getName(), b)
+		);
+	}
+
 }
