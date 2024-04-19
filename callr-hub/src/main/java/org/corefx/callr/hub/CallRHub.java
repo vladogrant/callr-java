@@ -73,7 +73,8 @@ public class CallRHub implements WebSocketHandler {
 		}
 		RuntimeException ex = new RuntimeException("Receiver " + receiver + " is not registered within the hub");
 		ResponseMessage response = new ResponseMessage();
-		response.setReceiver(m.getSender());
+		response.setReceiver(rpcm.getSender());
+		response.setRequest(rpcm.getRequest());
 		response.setException(ex);
 		try(ByteArrayOutputStream os = new ByteArrayOutputStream(); ObjectOutputStream ow = new ObjectOutputStream(os)) {
 			ow.writeObject(ex);

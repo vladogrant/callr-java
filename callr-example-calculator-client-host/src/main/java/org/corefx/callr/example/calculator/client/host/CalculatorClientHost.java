@@ -38,7 +38,7 @@ public class CalculatorClientHost implements CommandLineRunner {
 		catch(Exception ex) {
 			log.error(ex.getMessage(), ex);
 		}
-		System.in.read();
+		// System.in.read();
 	}
 
 }

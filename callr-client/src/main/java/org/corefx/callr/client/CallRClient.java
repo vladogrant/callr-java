@@ -126,10 +126,6 @@ public class CallRClient {
 			log.info("Message sent: [" + session.getId() + "] " + message);
 			log.debug(payload);
 		}
-		catch(JsonProcessingException e) {
-			log.error(e.getMessage(), e);
-			throw new RuntimeException(e);
-		}
 		catch(IOException e) {
 			log.error(e.getMessage(), e);
 			throw new RuntimeException(e);
