@@ -1,5 +1,7 @@
 package org.corefx.callr.client;
+
 import lombok.SneakyThrows;
+import org.corefx.callr.CallRMessage;
 import org.corefx.callr.Parameter;
 import org.corefx.callr.RequestMessage;
 import org.corefx.callr.ResponseMessage;
@@ -27,17 +29,20 @@ public abstract class CallRServiceProxy {
 		this.serviceId = serviceId;
 		this.client = client;
 
-		client.onMessage(message -> {
-			ResponseMessage response = (ResponseMessage) message;
-			if(!waitHandles.containsKey(response.getRequest()))
-				return;
-			responseRegistry.put(response.getRequest(), response);
-			Object waitHandle = waitHandles.get(response.getRequest());
-			synchronized(waitHandle) {
-				waitHandle.notifyAll();
-			}
-		});
+		client.onMessage(this::handleMessage);
 		client.connect();
+	}
+
+
+	private void handleMessage(CallRMessage message) {
+		ResponseMessage response = (ResponseMessage) message;
+		if(!waitHandles.containsKey(response.getRequest()))
+			return;
+		responseRegistry.put(response.getRequest(), response);
+		Object waitHandle = waitHandles.get(response.getRequest());
+		synchronized(waitHandle) {
+			waitHandle.notifyAll();
+		}
 	}
 
 
@@ -70,5 +75,4 @@ public abstract class CallRServiceProxy {
 		}
 		return response.getResult();
 	}
-
 }

@@ -14,6 +14,7 @@ public class CalculatorServiceConfiguration {
 
 	@Value("${callr.uri}")
 	URI uri;
+
 	@Value("${callr.example.calculator.service.id}")
 	UUID id;
 

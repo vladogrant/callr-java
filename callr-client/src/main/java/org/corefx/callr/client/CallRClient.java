@@ -41,70 +41,7 @@ public class CallRClient {
 	public void connect() {
 		StandardWebSocketClient client = new StandardWebSocketClient();
 		try {
-			session = client.doHandshake(new WebSocketHandler() {
-
-				@Override
-				public void afterConnectionEstablished(WebSocketSession session) {
-					session.setTextMessageSizeLimit(10 * 1024 * 1024);
-					session.setBinaryMessageSizeLimit(10 * 1024 * 1024);
-					log.info("Connection established: [" + session.getId() + "]");
-					CallRMessage m = new CallRMessage(id);
-					String payload;
-					try {
-						ObjectMapper objectMapper = new ObjectMapper();
-						payload = objectMapper.writeValueAsString(m);
-					}
-					catch(JsonProcessingException e) {
-						log.error(e.getMessage(), e);
-						throw new RuntimeException(e);
-					}
-					try {
-						session.sendMessage(new TextMessage(payload));
-					}
-					catch(IOException e) {
-						log.error(e.getMessage(), e);
-						throw new RuntimeException(e);
-					}
-				}
-
-
-				@Override
-				public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
-					log.info("Message received: [" + session.getId() + "] " + message);
-					String payload = message.getPayload().toString();
-					log.debug(payload);
-					CallRMessage m;
-					try {
-						ObjectMapper objectMapper = new ObjectMapper();
-						m = objectMapper.readValue(payload, CallRMessage.class);
-						if(messageHandler != null)
-							messageHandler.accept(m);
-					}
-					catch(JsonProcessingException e) {
-						log.error(e.getMessage(), e);
-						throw new RuntimeException(e);
-					}
-				}
-
-
-				@Override
-				public void handleTransportError(WebSocketSession session, Throwable exception) {
-					log.error(exception.getMessage(), exception);
-				}
-
-
-				@Override
-				public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
-					log.info("Connection closed: [" + session.getId() + "]");
-					log.info(closeStatus.toString());
-				}
-
-
-				@Override
-				public boolean supportsPartialMessages() {
-					return false;
-				}
-			}, new WebSocketHttpHeaders(), uri).get();
+			session = client.doHandshake(new CallRClientWebSocketHandler(), new WebSocketHttpHeaders(), uri).get();
 		}
 		catch(InterruptedException e) {
 			log.error(e.getMessage(), e);
@@ -129,6 +66,72 @@ public class CallRClient {
 		catch(IOException e) {
 			log.error(e.getMessage(), e);
 			throw new RuntimeException(e);
+		}
+	}
+
+
+	private class CallRClientWebSocketHandler implements WebSocketHandler {
+
+		@Override
+		public void afterConnectionEstablished(WebSocketSession session) {
+			session.setTextMessageSizeLimit(10 * 1024 * 1024);
+			session.setBinaryMessageSizeLimit(10 * 1024 * 1024);
+			log.info("Connection established: [" + session.getId() + "]");
+			CallRMessage m = new CallRMessage(id);
+			String payload;
+			try {
+				ObjectMapper objectMapper = new ObjectMapper();
+				payload = objectMapper.writeValueAsString(m);
+			}
+			catch(JsonProcessingException e) {
+				log.error(e.getMessage(), e);
+				throw new RuntimeException(e);
+			}
+			try {
+				session.sendMessage(new TextMessage(payload));
+			}
+			catch(IOException e) {
+				log.error(e.getMessage(), e);
+				throw new RuntimeException(e);
+			}
+		}
+
+
+		@Override
+		public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
+			log.info("Message received: [" + session.getId() + "] " + message);
+			String payload = message.getPayload().toString();
+			log.debug(payload);
+			CallRMessage m;
+			try {
+				ObjectMapper objectMapper = new ObjectMapper();
+				m = objectMapper.readValue(payload, CallRMessage.class);
+				if(messageHandler != null)
+					messageHandler.accept(m);
+			}
+			catch(JsonProcessingException e) {
+				log.error(e.getMessage(), e);
+				throw new RuntimeException(e);
+			}
+		}
+
+
+		@Override
+		public void handleTransportError(WebSocketSession session, Throwable exception) {
+			log.error(exception.getMessage(), exception);
+		}
+
+
+		@Override
+		public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) {
+			log.info("Connection closed: [" + session.getId() + "]");
+			log.info(closeStatus.toString());
+		}
+
+
+		@Override
+		public boolean supportsPartialMessages() {
+			return false;
 		}
 	}
 }
