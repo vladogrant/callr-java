@@ -26,11 +26,11 @@
 		<module>callr-client</module>
 		<module>callr-client-test</module>
 
-		<module>callr-example-calculator</module>
-		<module>callr-example-calculator-service</module>
-		<module>callr-example-calculator-service-host</module>
-		<module>callr-example-calculator-client</module>
-		<module>callr-example-calculator-client-host</module>
+		<module>examples/calculator/callr-example-calculator</module>
+		<module>examples/calculator/callr-example-calculator-service</module>
+		<module>examples/calculator/callr-example-calculator-service-host</module>
+		<module>examples/calculator/callr-example-calculator-client</module>
+		<module>examples/calculator/callr-example-calculator-client-host</module>
 
 	</modules>
 
