@@ -6,15 +6,15 @@ It frees you, your organization and customers from the need of configuring any p
 These so called 'passive services' run on the protected internal network and instead of listening for inbound connetions on specific port, they do a secure outbuond HTTP(WebSocket) connection to a publicly available CallR Hub.
 Of course securely, over SSL, employing Authentication and Authorization. On the other side CallR Clients also connect to the hub in the same manner.
 After that, the clients can invoke the service by sending an addressed request message to the hub. The hub pushes the request message to the respective service through the WebSocket connection.
-In the service, the request message is unwrapped into a method call and the result (or any exception thrown) is obtained. The result then is wrapped into a response message and sent back the hub.
+In the service, the request message is unwrapped into a method call and the result (or any exception thrown) is obtained. The result then is wrapped into a response message and sent back to the hub.
 The hub forwards the response message back to the calling client, where it is unwrapped as a result and returned to the calling method (or the exception is thrown).
 
 ## Implementing CallR Services and Clients
 In this section we'll go through what is required in order to implement CallR services and clients.
 Because all the machinery outlined in previous section is implemented in two base classes - `CallRServiceBase` and `CallRServiceProxy`,
 all you need is to inherit from these classes and implement your service/client interface.
-For example we'll go with a very simple `Calculator` service, which can add two integers and return the result.
-A more extended example, including hosting the service and client is can be found in `examples/calculator` folder of the project
+For an example we'll go with a very simple `Calculator` service, which can add two integers and return the result.
+A more extended example, including hosting the service and client can be found under `examples/calculator` folder of the project
 ### 1. Define an Interface
 The first step in the implementation of CallR service and client is to define an interface, which both the service and client will implement. This guarantees compile-time check of the implementation. For example:
 ```
