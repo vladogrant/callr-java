@@ -1,7 +1,9 @@
 package org.corefx.callr.client;
 
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -30,6 +32,13 @@ public class CallRClient {
 
 	private Consumer<CallRMessage> messageHandler;
 
+	private static final ObjectMapper json = new ObjectMapper();
+	private static final boolean indent = false;
+	static
+	{
+	  if(indent)
+		  json.enable(SerializationFeature.INDENT_OUTPUT);
+	}
 
 	public CallRClient(ClientConfigurationProperties config) {
 		this.config = config;
@@ -84,12 +93,11 @@ public class CallRClient {
 	public void send(CallRMessage m) {
 		String payload;
 		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			payload = objectMapper.writeValueAsString(m);
+			payload = json.writeValueAsString(m);
 			TextMessage message = new TextMessage(payload);
 			session.sendMessage(message);
-			log.info("Message sent: [" + session.getId() + "] " + message);
-			log.debug(payload);
+			log.info("Message sent: [" + session.getId() + "]");
+			log.debug((indent ? System.lineSeparator() : "") + payload);
 		}
 		catch(IOException e) {
 			log.error(e.getMessage(), e);
@@ -108,8 +116,7 @@ public class CallRClient {
 			CallRMessage m = new CallRMessage(config.getId());
 			String payload;
 			try {
-				ObjectMapper objectMapper = new ObjectMapper();
-				payload = objectMapper.writeValueAsString(m);
+				payload = json.writeValueAsString(m);
 			}
 			catch(JsonProcessingException e) {
 				log.error(e.getMessage(), e);
@@ -127,13 +134,12 @@ public class CallRClient {
 
 		@Override
 		public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
-			log.info("Message received: [" + session.getId() + "] " + message);
+			log.info("Message received: [" + session.getId() + "]");
 			String payload = message.getPayload().toString();
-			log.debug(payload);
+			log.debug((indent ? System.lineSeparator() : "") + payload);
 			CallRMessage m;
 			try {
-				ObjectMapper objectMapper = new ObjectMapper();
-				m = objectMapper.readValue(payload, CallRMessage.class);
+				m = json.readValue(payload, CallRMessage.class);
 				if(messageHandler != null)
 					messageHandler.accept(m);
 			}

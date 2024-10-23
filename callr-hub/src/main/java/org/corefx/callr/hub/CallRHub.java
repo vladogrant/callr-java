@@ -20,6 +20,7 @@ import java.util.UUID;
 public class CallRHub implements WebSocketHandler {
 
 	private final Map<UUID, WebSocketSession> sessions = new HashMap<>();
+	private final ObjectMapper json = new ObjectMapper();
 
 
 	@Override
@@ -38,9 +39,8 @@ public class CallRHub implements WebSocketHandler {
 		String n = p.getName();
 		CallRMessage m;
 		try {
-			ObjectMapper objectMapper = new ObjectMapper();
 			String payload = message.getPayload().toString();
-			m = objectMapper.readValue(payload, CallRMessage.class);
+			m = json.readValue(payload, CallRMessage.class);
 		}
 		catch(JsonProcessingException e) {
 			log.error(e.getMessage(), e);
@@ -87,8 +87,7 @@ public class CallRHub implements WebSocketHandler {
 			throw new RuntimeException(e);
 		}
 		try {
-			ObjectMapper objectMapper = new ObjectMapper();
-			String payload = objectMapper.writeValueAsString(response);
+			String payload = json.writeValueAsString(response);
 			session.sendMessage(new TextMessage(payload));
 		}
 		catch(IOException e) {
