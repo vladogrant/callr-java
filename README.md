@@ -1,12 +1,12 @@
 # CallR (Java)
 ## Overview
-CallR is an open-source, object-oriented RPC library and framework that allows implementing and using(calling) services running behind routers and firewals.
+CallR is an open-source, object-oriented RPC library and framework that allows implementing and using (calling) services running behind routers and firewals.
 It frees you, your organization and customers from the need of configuring any port forwardings on the routers, firewalls, setting up VPNs etc.
 ## How it Works (The 'Passive Service' Pattern)
-These so called 'passive services' run on the protected internal network and instead of listening for inbound connetions on specific port, they do a secure outbuond HTTP(WebSocket) connection to a publicly available CallR Hub.
+These so called 'passive services' run on the protected internal network and instead of listening for inbound connetions on specific port, they do a secure outbuond HTTPS (Secure WebSocket) connection to a publicly available CallR Hub.
 Of course securely, over SSL, employing Authentication and Authorization. On the other side CallR Clients also connect to the hub in the same manner.
 After that, the clients can invoke the service by sending an addressed request message to the hub. The hub pushes the request message to the respective service through the WebSocket connection.
-In the service, the request message is unwrapped into a method call and the result (or any exception thrown) is obtained. The result then is wrapped into a response message and sent back to the hub.
+In the service, the request message is unwrapped into a method call (using reflection) and the result (or any exception thrown) is obtained. The result then is wrapped into a response message and sent back to the hub.
 The hub forwards the response message back to the calling client, where it is unwrapped as a result and returned to the calling method (or the exception is thrown).
 
 ## Implementing CallR Services and Clients
@@ -37,11 +37,11 @@ public class CalculatorService extends CallRServiceBase implements Calculator {
 	}
 }
 ```
-That's it. All the required functionaity for connecting to the hub, registering the service(as a client of the hub),
+That's it. All the required functionaity for connecting to the hub, registering the service (as a client of the hub),
 receiving the pushed request messages, unwrapping them and calling the respective method is implemented in `CallRServiceBase` and `CallRClient`.
 Note the `CallRClient`is passed as a constructor parameter, but you can use any dependency injection method to inject it from the outside as a bean.
 ### 3. Implement the Client
-To implement the client, all you need is to inherit from `CallRServiceProxy` and implement the interface by simply calling the `invoke()` method of the base class, passing any parameters you may have.
+To implement the client, all you need is to inherit from `CallRServiceProxy` and implement the interface by simply calling the `invoke()` method of the base class, passing any parameters you might have.
 ```
 public class CalculatorServiceProxy extends CallRServiceProxy implements Calculator {
 
@@ -59,7 +59,8 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 
 }
 ```
-
+## Hosting
+## Security
 ## Scenarios/Use Cases
 ## Donations
 |Please, donate any amount to help the development and support of this project. Thank you!|

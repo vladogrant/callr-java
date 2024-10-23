@@ -11,6 +11,7 @@ import org.springframework.web.socket.*;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
+import java.security.Principal;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -33,6 +34,8 @@ public class CallRHub implements WebSocketHandler {
 	public void handleMessage(WebSocketSession session, WebSocketMessage<?> message) {
 		log.info("Message received: [" + session.getId() + "] " + message);
 
+		Principal p = session.getPrincipal();
+		String n = p.getName();
 		CallRMessage m;
 		try {
 			ObjectMapper objectMapper = new ObjectMapper();

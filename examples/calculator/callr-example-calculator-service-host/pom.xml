@@ -22,13 +22,19 @@
 
 		<dependency>
 			<groupId>org.corefx.callr</groupId>
-			<artifactId>callr-client</artifactId>
+			<artifactId>callr-common</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.corefx.callr</groupId>
-			<artifactId>callr-common</artifactId>
+			<artifactId>callr-configuration</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.corefx.callr</groupId>
+			<artifactId>callr-client</artifactId>
 			<version>${parent.version}</version>
 		</dependency>
 

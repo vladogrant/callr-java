@@ -1,7 +1,34 @@
 spring:
   main:
+    web-application-type: none
     banner-mode: off
+
+callr:
+  protocol: wss
+  host: localhost
+  port: 8443
+  path: /
+  uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}
+
+  test:
+    client:
+      id: 00000000-0000-0000-0000-A736F2F2FAD3
+      uri: ${callr.uri}
+      ssl:
+        # enabled:true
+        trust-store:
+          file: classpath:localhost.jks
+          #type: JKS
+          password: s3cr3t
+      authentication:
+        type: basic
+        key:
+          header: x-auth-secret
+          secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
+        basic:
+          id: 00000000-0000-0000-0000-A736F2F2FAD3
+          secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
 logging:
   level:
-    root: error
+    root: info
     org.corefx.callr: info

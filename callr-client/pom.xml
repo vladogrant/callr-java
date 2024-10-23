@@ -24,8 +24,14 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-websocket</artifactId>
+			<groupId>org.corefx.callr</groupId>
+			<artifactId>callr-configuration</artifactId>
+			<version>${parent.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-websocket</artifactId>
 		</dependency>
 
 		<dependency>
@@ -43,6 +49,12 @@
 			<artifactId>tyrus-standalone-client</artifactId>
 			<scope>runtime</scope>
 			<version>1.9</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.apache.httpcomponents.client5</groupId>
+			<artifactId>httpclient5</artifactId>
+			<version>5.4</version>
 		</dependency>
 
 		<dependency>

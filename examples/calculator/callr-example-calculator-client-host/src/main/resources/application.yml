@@ -6,13 +6,34 @@ spring:
     banner-mode: off
 
 callr:
-  protocol: ws
+  protocol: wss
   host: localhost
-  port: 8080
+  port: 8443
   path: /
   uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}
 
+  example:
+    calculator:
+        client:
+          id: 00000000-0000-0000-0000-A736F2F2FAD3
+          service-id: 00000000-0000-0000-0000-A736F2F2FAD2
+          uri: ${callr.uri}
+          authentication:
+            type: basic # basic, key, jwt...
+            key:
+              header: x-auth-secret
+              secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
+            basic:
+              id: 00000000-0000-0000-0000-A736F2F2FAD3
+              secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
+          ssl:
+            #enabled: true
+            trust-store:
+                file: classpath:localhost.jks
+                #type: PKCS12
+                password: s3cr3t
+
 logging:
   level:
-    root: error
+    root: info
     org.corefx.callr: debug

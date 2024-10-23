@@ -9,6 +9,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication(scanBasePackages = {
+		"org.corefx.callr.client",
 		"org.corefx.callr.example.calculator.service",
 })
 @AllArgsConstructor
@@ -25,7 +26,7 @@ public class CalculatorServiceHost implements CommandLineRunner {
 	@SneakyThrows
 	@Override
 	public void run(String... args) {
-		((CallRServiceBase)service).start();
+		((CallRServiceBase) service).start();
 		System.in.read();
 	}
 

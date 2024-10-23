@@ -3,13 +3,17 @@ package org.corefx.callr.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.Getter;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.corefx.callr.CallRMessage;
+import org.corefx.callr.configuration.ClientConfigurationProperties;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
+import javax.net.ssl.SSLContext;
 import java.io.IOException;
-import java.net.URI;
+import java.util.Base64;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -17,7 +21,7 @@ import java.util.function.Consumer;
 @Slf4j
 public class CallRClient {
 
-	private URI uri;
+	private final ClientConfigurationProperties config;
 
 	@Getter
 	private final UUID id;
@@ -27,9 +31,9 @@ public class CallRClient {
 	private Consumer<CallRMessage> messageHandler;
 
 
-	public CallRClient(UUID id, URI uri) {
-		this.id = id;
-		this.uri = uri;
+	public CallRClient(ClientConfigurationProperties config) {
+		this.config = config;
+		this.id = config.getId();
 	}
 
 
@@ -38,10 +42,28 @@ public class CallRClient {
 	}
 
 
+	@SneakyThrows
 	public void connect() {
+
 		StandardWebSocketClient client = new StandardWebSocketClient();
+
+		SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
+		sslContextBuilder.loadTrustMaterial(
+				config.getSsl().getTrustStore().getFile().getURL(), config.getSsl().getTrustStore().getPassword().toCharArray());
+		SSLContext sslContext = sslContextBuilder.build();
+		client.setSslContext(sslContext);
+
+		WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
+		if("key".equals(config.getAuthentication().getType()))
+			headers.add(config.getAuthentication().getKey().getHeader(), config.getAuthentication().getKey().getSecret());
+		else if("basic".equals(config.getAuthentication().getType())) {
+			String plainCreds = config.getAuthentication().getBasic().getId() + ":" + config.getAuthentication().getBasic().getSecret();
+			String creds = Base64.getEncoder().encodeToString(plainCreds.getBytes());
+			headers.add("Authorization", "Basic " + creds);
+		}
+
 		try {
-			session = client.doHandshake(new CallRClientWebSocketHandler(), new WebSocketHttpHeaders(), uri).get();
+			session = client.execute(new CallRClientWebSocketHandler(), headers, config.getUri()).get();
 		}
 		catch(InterruptedException e) {
 			log.error(e.getMessage(), e);
@@ -50,6 +72,12 @@ public class CallRClient {
 		catch(ExecutionException e) {
 			throw new RuntimeException(e);
 		}
+	}
+
+
+	@SneakyThrows
+	public void disconnect() {
+		session.close();
 	}
 
 
@@ -77,7 +105,7 @@ public class CallRClient {
 			session.setTextMessageSizeLimit(10 * 1024 * 1024);
 			session.setBinaryMessageSizeLimit(10 * 1024 * 1024);
 			log.info("Connection established: [" + session.getId() + "]");
-			CallRMessage m = new CallRMessage(id);
+			CallRMessage m = new CallRMessage(config.getId());
 			String payload;
 			try {
 				ObjectMapper objectMapper = new ObjectMapper();

@@ -1,18 +1,22 @@
 package org.corefx.callr.client.test;
 
 import lombok.extern.slf4j.Slf4j;
-import org.corefx.callr.RequestMessage;
 import org.corefx.callr.CallRMessage;
+import org.corefx.callr.RequestMessage;
 import org.corefx.callr.client.CallRClient;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 
-import java.net.URI;
 import java.util.UUID;
 
 @Slf4j
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {
+		"org.corefx.callr.client"
+})
+@EnableConfigurationProperties
 public class CallRClientTestApplication implements CommandLineRunner {
 
 	public static void main(String[] args) {
@@ -20,22 +24,24 @@ public class CallRClientTestApplication implements CommandLineRunner {
 	}
 
 
+	@Autowired
+	CallRClientTestConfigurationProperties config;
+
+
 	@Override
 	public void run(String... args) throws Exception {
 
-		CallRClient client = new CallRClient(UUID.randomUUID(), URI.create("ws://localhost:8080/"));
-		client.onMessage(m -> log.info(m.getSender().toString()));
+		CallRClient client = new CallRClient(config);
+		client.onMessage(m -> log.info(m.toString()));
 		client.connect();
 
-		UUID sender = UUID.randomUUID();
-
 		CallRMessage callRMessage = new CallRMessage();
-		callRMessage.setSender(sender);
+		callRMessage.setSender(config.getId());
 		client.send(callRMessage);
 
 		RequestMessage requestMessage = new RequestMessage();
-		requestMessage.setSender(sender);
-		requestMessage.setReceiver(sender);
+		requestMessage.setSender(config.getId());
+		requestMessage.setReceiver(config.getId());
 		requestMessage.setRequest(UUID.randomUUID());
 		requestMessage.setOperation("Add");
 		client.send(requestMessage);
