@@ -1,6 +1,5 @@
 package org.corefx.callr.client;
 
-import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -34,10 +33,10 @@ public class CallRClient {
 
 	private static final ObjectMapper json = new ObjectMapper();
 	private static final boolean indent = false;
-	static
-	{
-	  if(indent)
-		  json.enable(SerializationFeature.INDENT_OUTPUT);
+
+	static {
+		if(indent)
+			json.enable(SerializationFeature.INDENT_OUTPUT);
 	}
 
 	public CallRClient(ClientConfigurationProperties config) {

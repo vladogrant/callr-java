@@ -1,4 +1,4 @@
-package org.corefx.callr.hub.host;
+package org.corefx.callr.hub;
 
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;

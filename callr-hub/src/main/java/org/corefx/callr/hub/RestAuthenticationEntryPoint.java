@@ -1,4 +1,4 @@
-package org.corefx.callr.hub.host;
+package org.corefx.callr.hub;
 
 import java.io.IOException;
 

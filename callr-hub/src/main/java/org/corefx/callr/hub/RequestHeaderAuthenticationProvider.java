@@ -1,4 +1,4 @@
-package org.corefx.callr.hub.host;
+package org.corefx.callr.hub;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;

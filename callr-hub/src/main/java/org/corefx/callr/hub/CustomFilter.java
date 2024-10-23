@@ -1,4 +1,4 @@
-package org.corefx.callr.hub.host;
+package org.corefx.callr.hub;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.web.filter.GenericFilterBean;
