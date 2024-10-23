@@ -67,8 +67,8 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 ## Security
 ## Scenarios/Use Cases
 ## Consultancy, Development, Integration and Support
-### I provide consultancy, end-to-end service/client development, integration (including the hub infrastructure), deployment and support.
-### If you are interested in hiring me, please, send me an email message to [vlado@granitsky.net](mailto:vlado@granitsky.net) and we can start discussing your needs.
+ I provide consultancy, end-to-end service/client development, integration (including the hub infrastructure), deployment and support.
+ If you are interested in hiring me, please, send me an email message to [vlado@granitsky.net](mailto:vlado@granitsky.net) and we can start discussing your needs.
 ## Donations
 |Please, donate any amount to help the development and support of this project. Thank you!|
 |:----:|
