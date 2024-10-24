@@ -10,6 +10,7 @@
 		<groupId>org.corefx.callr</groupId>
 		<artifactId>callr</artifactId>
 		<version>1.0.0-SNAPSHOT</version>
+		<relativePath>../../../pom.xml</relativePath>
 	</parent>
 
 	<artifactId>callr-example-calculator-client-host</artifactId>

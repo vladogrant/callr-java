@@ -45,6 +45,5 @@ public class CallRClientTestApplication implements CommandLineRunner {
 		requestMessage.setRequest(UUID.randomUUID());
 		requestMessage.setOperation("Add");
 		client.send(requestMessage);
-		System.in.read();
 	}
 }

@@ -60,11 +60,34 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 }
 ```
 ## Hosting
+The hub, services and clients are (must be) hosted in a Spring Boot applicaions. The hub must be hosted in a Spring Boot Web application, while services and clients can be hosted in any kind of web/console/service application.
+
 ### Hosting the Hub
+The hub is hosted in a web application and has requirements for the configuration of SSL, Authentication and Authorization. Because of this it is recommended to host the hub alone in that web application.
+
 ### Hosting the Service
+
 ### Hosting the Client
 
 ## Security
+
+### SSL
+For the hub, SSL is configured at server level. 
+```
+server:
+  port: 8443
+  ssl:
+    enabled: true
+    key-store-type: JKS
+    key-store: classpath:keystore.jks
+    key-alias: hub.example.com
+    key-store-password: s3cr3t
+```
+### Authentication
+
+### Authorization
+
+
 ## Scenarios and Example Usages
 ## Consultancy, Development, Integration and Support
  I provide consultancy, end-to-end service/client development, integration (including the hub infrastructure), deployment and support.

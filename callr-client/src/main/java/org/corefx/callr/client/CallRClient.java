@@ -8,7 +8,7 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
 import org.corefx.callr.CallRMessage;
-import org.corefx.callr.configuration.ClientConfigurationProperties;
+import org.corefx.callr.configuration.*;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
@@ -56,16 +56,22 @@ public class CallRClient {
 		StandardWebSocketClient client = new StandardWebSocketClient();
 
 		SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
-		sslContextBuilder.loadTrustMaterial(
-				config.getSsl().getTrustStore().getFile().getURL(), config.getSsl().getTrustStore().getPassword().toCharArray());
+		TrustStoreConfigurationProperties trustStore = config.getSsl().getTrustStore();
+		sslContextBuilder.loadTrustMaterial(trustStore.getFile().getURL(), trustStore.getPassword().toCharArray());
 		SSLContext sslContext = sslContextBuilder.build();
 		client.setSslContext(sslContext);
 
 		WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
-		if("key".equals(config.getAuthentication().getType()))
-			headers.add(config.getAuthentication().getKey().getHeader(), config.getAuthentication().getKey().getSecret());
-		else if("basic".equals(config.getAuthentication().getType())) {
-			String plainCreds = config.getAuthentication().getBasic().getId() + ":" + config.getAuthentication().getBasic().getSecret();
+
+		AuthenticationConfigurationProperties auth = config.getAuthentication();
+		if("key".equals(auth.getType())) {
+			KeyAuthenticationConfigurationProperties keyAuth = auth.getKey();
+			headers.add(keyAuth.getHeader(), keyAuth.getSecret());
+		}
+		else if("basic".equals(auth.getType())) {
+			BasicAuthenticationConfigurationProperties basicAuth = auth.getBasic();
+			String id = basicAuth.getId() != null ? basicAuth.getId() : this.id.toString();
+			String plainCreds = id + ":" + basicAuth.getSecret();
 			String creds = Base64.getEncoder().encodeToString(plainCreds.getBytes());
 			headers.add("Authorization", "Basic " + creds);
 		}
