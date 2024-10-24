@@ -10,7 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Getter
 @Configuration
 @ConfigurationProperties(prefix = "ssl")
-public class ClientSslConfigurationProperties {
+public class SslAuthenticationConfigurationProperties {
+	@NestedConfigurationProperty
+	KeyStoreConfigurationProperties keyStore;
 
 	@NestedConfigurationProperty
 	TrustStoreConfigurationProperties trustStore;

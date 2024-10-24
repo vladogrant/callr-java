@@ -19,4 +19,7 @@ public class AuthenticationConfigurationProperties {
 
 	@NestedConfigurationProperty
 	KeyAuthenticationConfigurationProperties key;
+
+	@NestedConfigurationProperty
+	SslAuthenticationConfigurationProperties ssl;
 }

@@ -20,7 +20,7 @@ public class ClientConfigurationProperties {
 	private URI uri;
 
 	@NestedConfigurationProperty
-	ClientSslConfigurationProperties ssl;
+	SslAuthenticationConfigurationProperties ssl;
 
 	@NestedConfigurationProperty
 	AuthenticationConfigurationProperties authentication;

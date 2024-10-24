@@ -56,25 +56,36 @@ public class CallRClient {
 		StandardWebSocketClient client = new StandardWebSocketClient();
 
 		SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
-		TrustStoreConfigurationProperties trustStore = config.getSsl().getTrustStore();
-		sslContextBuilder.loadTrustMaterial(trustStore.getFile().getURL(), trustStore.getPassword().toCharArray());
-		SSLContext sslContext = sslContextBuilder.build();
-		client.setSslContext(sslContext);
+		TrustStoreConfigurationProperties trustStoreConfig = config.getSsl().getTrustStore();
+		sslContextBuilder.loadTrustMaterial(
+				trustStoreConfig.getFile().getURL(),
+				trustStoreConfig.getPassword().toCharArray());
 
 		WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
 
-		AuthenticationConfigurationProperties auth = config.getAuthentication();
-		if("key".equals(auth.getType())) {
-			KeyAuthenticationConfigurationProperties keyAuth = auth.getKey();
+		AuthenticationConfigurationProperties authConfig = config.getAuthentication();
+		if("key".equals(authConfig.getType())) {
+			KeyAuthenticationConfigurationProperties keyAuth = authConfig.getKey();
 			headers.add(keyAuth.getHeader(), keyAuth.getSecret());
 		}
-		else if("basic".equals(auth.getType())) {
-			BasicAuthenticationConfigurationProperties basicAuth = auth.getBasic();
+		else if("basic".equals(authConfig.getType())) {
+			BasicAuthenticationConfigurationProperties basicAuth = authConfig.getBasic();
 			String id = basicAuth.getId() != null ? basicAuth.getId() : this.id.toString();
 			String plainCreds = id + ":" + basicAuth.getSecret();
 			String creds = Base64.getEncoder().encodeToString(plainCreds.getBytes());
 			headers.add("Authorization", "Basic " + creds);
 		}
+		else if("ssl".equals(authConfig.getType())) {
+			SslAuthenticationConfigurationProperties sslAuthConfig = authConfig.getSsl();
+			KeyStoreConfigurationProperties keyStoreConfig = sslAuthConfig.getKeyStore();
+			sslContextBuilder.loadKeyMaterial(
+					keyStoreConfig.getFile().getURL(),
+					keyStoreConfig.getPassword().toCharArray(),
+					keyStoreConfig.getPassword().toCharArray());
+		}
+
+		SSLContext sslContext = sslContextBuilder.build();
+		client.setSslContext(sslContext);
 
 		try {
 			session = client.execute(new CallRClientWebSocketHandler(), headers, config.getUri()).get();
