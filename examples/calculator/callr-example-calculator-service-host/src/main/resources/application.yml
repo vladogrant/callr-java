@@ -29,7 +29,7 @@ callr:
           # enabled: true
           trust-store:
             # type: PKCS12
-            file: classpath:localhost.jks
+            file: classpath:keystore.jks
             password: s3cr3t
       authorization:
         user-roles:
