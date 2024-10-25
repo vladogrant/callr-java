@@ -19,7 +19,7 @@ callr:
         ssl:
           #enabled: true
           trust-store:
-            file: classpath:localhost.jks
+            file: classpath:truststore.jks
             #type: PKCS12
             password: s3cr3t
         authentication:
@@ -32,7 +32,7 @@ callr:
             secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
           ssl:
             key-store:
-              file: classpath:localhost.jks
+              file: classpath:keystore.jks
               #type: PKCS12
               password: s3cr3t
 
