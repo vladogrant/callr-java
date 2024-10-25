@@ -12,11 +12,11 @@
 		<version>1.0.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>callr-client-test</artifactId>
+	<artifactId>callr-client-host</artifactId>
 	<version>${parent.version}</version>
 
-	<name>callr-client-test</name>
-	<description>callr-client-test</description>
+	<name>callr-client-host</name>
+	<description>callr-client-host</description>
 
 	<dependencies>
 

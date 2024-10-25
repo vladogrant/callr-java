@@ -25,7 +25,7 @@
 		<module>callr-hub</module>
 		<module>callr-hub-host</module>
 		<module>callr-client</module>
-		<module>callr-client-test</module>
+		<module>callr-client-host</module>
 
 		<module>examples/calculator/callr-example-calculator</module>
 		<module>examples/calculator/callr-example-calculator-service</module>

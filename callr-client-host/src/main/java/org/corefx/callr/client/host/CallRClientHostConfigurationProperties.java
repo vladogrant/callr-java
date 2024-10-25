@@ -1,4 +1,4 @@
-package org.corefx.callr.client.test;
+package org.corefx.callr.client.host;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Configuration;
 @Setter
 @Getter
 @Configuration
-@ConfigurationProperties(prefix = "callr.test.client")
-public class CallRClientTestConfigurationProperties extends ClientConfigurationProperties {
+@ConfigurationProperties(prefix = "callr.client")
+public class CallRClientHostConfigurationProperties extends ClientConfigurationProperties {
 
 }

@@ -1,4 +1,4 @@
-package org.corefx.callr.client.test;
+package org.corefx.callr.client.host;
 
 import lombok.extern.slf4j.Slf4j;
 import org.corefx.callr.CallRMessage;
@@ -17,15 +17,15 @@ import java.util.UUID;
 		"org.corefx.callr.client"
 })
 @EnableConfigurationProperties
-public class CallRClientTestApplication implements CommandLineRunner {
+public class CallRClientHostApplication implements CommandLineRunner {
 
 	public static void main(String[] args) {
-		SpringApplication.run(CallRClientTestApplication.class, args);
+		SpringApplication.run(CallRClientHostApplication.class, args);
 	}
 
 
 	@Autowired
-	CallRClientTestConfigurationProperties config;
+	CallRClientHostConfigurationProperties config;
 
 
 	@Override
@@ -43,7 +43,7 @@ public class CallRClientTestApplication implements CommandLineRunner {
 		requestMessage.setSender(config.getId());
 		requestMessage.setReceiver(config.getId());
 		requestMessage.setRequest(UUID.randomUUID());
-		requestMessage.setOperation("Add");
+		requestMessage.setOperation("<none>");
 		client.send(requestMessage);
 
 		client.disconnect();
