@@ -56,10 +56,12 @@ public class CallRClient {
 		StandardWebSocketClient client = new StandardWebSocketClient();
 
 		SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
+/*
 		TrustStoreConfigurationProperties trustStoreConfig = config.getSsl().getTrustStore();
 		sslContextBuilder.loadTrustMaterial(
 				trustStoreConfig.getFile().getURL(),
 				trustStoreConfig.getPassword().toCharArray());
+*/
 
 		WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
 
@@ -70,7 +72,7 @@ public class CallRClient {
 		}
 		else if("basic".equals(authConfig.getType())) {
 			BasicAuthenticationConfigurationProperties basicAuth = authConfig.getBasic();
-			String id = basicAuth.getId() != null ? basicAuth.getId() : this.id.toString();
+			String id = basicAuth.getId() != null ? basicAuth.getId() : this.id.toString().toUpperCase();
 			String plainCreds = id + ":" + basicAuth.getSecret();
 			String creds = Base64.getEncoder().encodeToString(plainCreds.getBytes());
 			headers.add("Authorization", "Basic " + creds);
