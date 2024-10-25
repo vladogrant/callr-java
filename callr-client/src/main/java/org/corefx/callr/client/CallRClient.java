@@ -6,15 +6,21 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.Getter;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.hc.core5.ssl.PrivateKeyDetails;
+import org.apache.hc.core5.ssl.PrivateKeyStrategy;
 import org.apache.hc.core5.ssl.SSLContextBuilder;
+import org.apache.hc.core5.ssl.TrustStrategy;
 import org.corefx.callr.CallRMessage;
 import org.corefx.callr.configuration.*;
 import org.springframework.web.socket.*;
 import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 
 import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLParameters;
 import java.io.IOException;
+import java.security.KeyStore;
 import java.util.Base64;
+import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
@@ -56,11 +62,14 @@ public class CallRClient {
 		StandardWebSocketClient client = new StandardWebSocketClient();
 
 		SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
-/*
 		TrustStoreConfigurationProperties trustStoreConfig = config.getSsl().getTrustStore();
 		sslContextBuilder.loadTrustMaterial(
 				trustStoreConfig.getFile().getURL(),
 				trustStoreConfig.getPassword().toCharArray());
+/*
+		KeyStore trustStore = KeyStore.getInstance("jks");
+		trustStore.load(trustStoreConfig.getFile().getInputStream(), trustStoreConfig.getPassword().toCharArray());
+		sslContextBuilder.loadTrustMaterial(trustStore, null);
 */
 
 		WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
@@ -84,6 +93,11 @@ public class CallRClient {
 					keyStoreConfig.getFile().getURL(),
 					keyStoreConfig.getPassword().toCharArray(),
 					keyStoreConfig.getPassword().toCharArray());
+/*
+			KeyStore keyStore = KeyStore.getInstance("jks");
+			keyStore.load(keyStoreConfig.getFile().getInputStream(), keyStoreConfig.getPassword().toCharArray());
+			sslContextBuilder.loadKeyMaterial(keyStore,	keyStoreConfig.getPassword().toCharArray(),	(map, sslParameters) -> "localhost");
+*/
 		}
 
 		SSLContext sslContext = sslContextBuilder.build();

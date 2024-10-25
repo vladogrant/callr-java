@@ -6,10 +6,16 @@ server:
   port: 8443
   ssl:
     enabled: true
+
     key-store-type: JKS
     key-store: classpath:localhost.jks
     key-alias: localhost
     key-store-password: s3cr3t
+
+#    trust-store-type: JKS
+#    trust-store: classpath:localhost.jks
+#    trust-store-password: s3cr3t
+
     # client-auth: none
 callr:
   protocol: wss
@@ -25,9 +31,11 @@ callr:
       secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
     basic:
       secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
+
   authorization:
     user-roles:
       00000000-0000-0000-0000-A736F2F2FAD1:
+
 logging:
   level:
     root: info
