@@ -32,15 +32,12 @@ build/
 
 ### VS Code ###
 .vscode/
-
 .idea.bak/
 
 application-dev.yml
-application-dev.yaml
-application-dev.properties
-
-srs-web/src/main/resources/public/**
-srs-fxmap/package-lock.json
-
 
 _src/
+
+### Custom. Project specific
+
+.ssl

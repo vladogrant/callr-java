@@ -10,7 +10,11 @@ server:
     key-store: classpath:keystore.jks
     key-alias: localhost
     key-store-password: s3cr3t
-    # client-auth: none
+    trust-store-type: JKS
+    trust-store: classpath:truststore.jks
+    trust-store-password: s3cr3t
+    trust-store-provider: SUN
+    client-auth: need
 callr:
   protocol: wss
   host: localhost
@@ -19,7 +23,7 @@ callr:
   uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}
 
   authentication:
-    type: basic
+    type: ssl # basic, key, ssl, jwt...
     key:
       header: x-auth-secret
       secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC

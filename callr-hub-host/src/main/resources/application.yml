@@ -6,18 +6,16 @@ server:
   port: 8443
   ssl:
     enabled: true
-
     key-store-type: JKS
     key-store: classpath:keystore.jks
     key-alias: localhost
     key-store-password: s3cr3t
-
     trust-store-type: JKS
     trust-store: classpath:truststore.jks
     trust-store-password: s3cr3t
     trust-store-provider: SUN
-
     client-auth: need
+
 callr:
   protocol: wss
   host: localhost
