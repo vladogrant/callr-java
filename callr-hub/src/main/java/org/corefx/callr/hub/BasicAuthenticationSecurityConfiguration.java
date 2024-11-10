@@ -21,6 +21,9 @@ public class BasicAuthenticationSecurityConfiguration {
 	@Autowired
 	private RestAuthenticationEntryPoint authenticationEntryPoint;
 
+	@Autowired
+	UserDetailsService userDetailsService;
+
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -28,15 +31,9 @@ public class BasicAuthenticationSecurityConfiguration {
 				.authorizeHttpRequests(customizer -> customizer.anyRequest().authenticated())
 				.httpBasic(config -> config.authenticationEntryPoint(authenticationEntryPoint))
 				.addFilterAfter(new CustomFilter(), BasicAuthenticationFilter.class)
-				.userDetailsService(userDetailsService());
+				.userDetailsService(userDetailsService);
 		;
 		return httpSecurity.build();
-	}
-
-
-	@Bean
-	public UserDetailsService userDetailsService() {
-		return new ConfigurationPropertiesUserDetailsService();
 	}
 
 

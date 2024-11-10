@@ -22,7 +22,7 @@ callr:
         #type: PKCS12
         password: s3cr3t
     authentication:
-      type: basic # basic, key, ssl, jwt...
+      type: ssl # basic, key, ssl, jwt...
       key:
         header: x-auth-secret
         secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC

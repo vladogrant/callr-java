@@ -1,5 +1,6 @@
 package org.corefx.callr.hub;
 
+import org.corefx.callr.configuration.AuthenticationConfigurationProperties;
 import org.corefx.callr.configuration.AuthorizationConfigurationProperties;
 import org.corefx.callr.configuration.BasicAuthenticationConfigurationProperties;
 import org.corefx.callr.configuration.GlobalConfigurationProperties;
@@ -37,8 +38,10 @@ public class ConfigurationPropertiesUserDetailsService implements UserDetailsSer
 		}
 		List<GrantedAuthority> authorities =
 				AuthorityUtils.createAuthorityList(roles.stream().map(s -> "ROLE_" + s.toUpperCase()).toList());
-		BasicAuthenticationConfigurationProperties auth = config.getAuthentication().getBasic();
-		String password = passwordEncoder.encode(auth.getSecret());
+		String password = "";
+		AuthenticationConfigurationProperties auth = config.getAuthentication();
+		if(auth.getType().equals("basic"))
+			password = passwordEncoder.encode(auth.getBasic().getSecret());
 		return new User(username, password, authorities);
 	}
 }
