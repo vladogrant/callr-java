@@ -10,7 +10,7 @@ In the service, the request message is unwrapped into a method call (using refle
 The hub forwards the response message back to the calling client, where it is unwrapped as a result, which is returned to the calling method (or the exception is thrown). 
 ![](common-infrastructure.png)
 ## Common Example Usage and Scenarios
-For an example, imagine you are a SAAS provider, who is providing business software solutions for customers in some branch/industry. You are running a web application in your premises (or in your cloud infrastructure), exposed to your customers where they interact with your software. The customer has a device on their premises that has a digital interface to access the device - read/write data, control the device, manage the device settings etc. The device could be any kind of device - a digital scale, dimensioning device, temperature controller etc. The digital interface of the device also could be of any kind - USB, Serial Interface, Network Protocol, Web Service etc. The customer wants you to integrate the device in your software solution. You need to develop and deploy a service, that will run in the customer network/premises. The service  will talk with the device from one side, and will expose an API to your software from another. 
+For an example, imagine you are a SAAS provider, who is providing business software solutions for customers in some branch/industry. You are running a web application in your premises (or in your cloud infrastructure), exposed to your customers where they interact with your software. The customer has a device on their premises that has a digital interface to access the device - read/write data, control the device, manage the device settings etc. The device could be any kind of device - a digital scale or balance, dimensioning device, temperature controller etc. The digital interface of the device also could be of any kind - USB, Serial Interface, Network Protocol, Web Service etc. The customer wants you to integrate the device in your software solution. You need to develop and deploy a service, that will run in the customer network/premises. The service  will talk with the device from one side, and will expose an API to your software from another. 
 
 The **ordinary solution** would be to develop an ordinary service that will listen for connections and requests on some TCP/IP port.
 
@@ -72,7 +72,74 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 The hub, services and clients are (must be) hosted in a Spring Boot applicaions. The hub must be hosted in a Spring Boot Web application, while services and clients can be hosted in any kind of web/non-web application.
 
 ### Hosting the Hub
-The hub is hosted in a web application and has requirements for the configuration of SSL, Authentication and Authorization. Because of this it is recommended to host the hub alone in that web application.
+To host the hub you need a verysimple Spring Boot Web Application. The hub has requirements for the configuration of SSL, Authentication and Authorization. Because of this it is recommended to host the hub standalone in that web application. For our example Calculator system, the hub hosting application looks like this:
+
+<img style="float: left; width:420px" src="hosting-the-hub.png">
+
+```
+package org.corefx.callr.example.calculator.hub.host;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication(scanBasePackages = {
+		"org.corefx.callr.hub"
+})
+public class CalculatorHubHostApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(CalculatorHubHostApplication.class, args);
+	}
+
+}
+```
+The ```application.ylm``` file contains the configuration for the server, web application and hub. For example:
+```yml
+spring:
+  main:
+    banner-mode: off
+
+server:
+  port: 9443
+  ssl:
+    enabled: true
+    key-store-type: JKS
+    key-store: classpath:keystore.jks
+    key-alias: localhost
+    key-store-password: s3cr3t
+    trust-store-type: JKS
+    trust-store: classpath:truststore.jks
+    trust-store-password: s3cr3t
+    client-auth: need
+callr:
+  protocol: wss
+  host: localhost
+  port: 9443
+  path: /
+  uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}
+
+  authentication:
+    type: ssl # basic, key, ssl, jwt...
+    key:
+      header: x-auth-secret
+      secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
+    basic:
+      secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
+  authorization:
+    user-roles:
+      00000000-0000-0000-0000-A736F2F2FAD2:
+      00000000-0000-0000-0000-A736F2F2FAD3:
+        - adder
+      00000000-0000-0000-0000-A736F2F2FAD4:
+        - adder
+        - divider
+logging:
+  level:
+    root: info
+    org.corefx.callr: debug
+
+```
+
 
 ### Hosting the Service
 
@@ -94,6 +161,9 @@ server:
 ```
 You need to import the server SSL certificate in the keystore.
 ### Authentication
+CallR communication does dot involve user interaction. This is basically a code-to-code, or lets say M2M communication. Because of this nature of communication, there's no user intreface like login forms etc. involved in Authentication mechanisms. CallR suppotrs out-of-the-box variaty of Authentication methods incl. Basic Authentication, Shared Secret(Key), SSL Client Certificate, JWT. These can be easily switched between in the hosting application configuration (```application.yml```). All the  communication is (must be) secured by SSL, so you do not have to worry about man-in-the-middle attacks, sniffilg and stealing your athentication information. 
+
+Both services and clients authenticate to he hub, and after that they can start exchange messages, that is basically clients can call the services and services can respond to the clients. (Remember, both CallR services and clients are actually clients of the hub)
 
 ### Authorization
 
