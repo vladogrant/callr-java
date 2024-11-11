@@ -13,7 +13,6 @@ server:
     trust-store-type: JKS
     trust-store: classpath:truststore.jks
     trust-store-password: s3cr3t
-    trust-store-provider: SUN
     client-auth: need
 callr:
   protocol: wss

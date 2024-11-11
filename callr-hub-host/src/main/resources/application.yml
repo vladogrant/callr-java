@@ -13,7 +13,6 @@ server:
     trust-store-type: JKS
     trust-store: classpath:truststore.jks
     trust-store-password: s3cr3t
-    trust-store-provider: SUN
     client-auth: need
 
 callr:
@@ -34,6 +33,7 @@ callr:
   authorization:
     user-roles:
       00000000-0000-0000-0000-A736F2F2FAD1:
+        - generic
 
 logging:
   level:
