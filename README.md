@@ -20,10 +20,10 @@ The **callr (passive service) solution** frees you from all this burden.
 
 ## Implementing CallR Services and Clients
 In this section we'll go through what is required in order to implement CallR services and clients.
-Because all the machinery outlined in the 'How it Works' section is implemented in two base classes - `CallRServiceBase` and `CallRServiceProxy`,
+Because all the machinery outlined in the 'How it Works' section is implemented in two base classes - [`CallRServiceBase`](callr-client/src/main/java/org/corefx/callr/client/CallRServiceBase.java) and [`CallRServiceProxy`](callr-client/src/main/java/org/corefx/callr/client/CallRServiceProxy.java),
 all you need is to inherit from these classes and implement your service interface.
 For an example we'll go with a very simple `Calculator` service, which can add two integers and return the result.
-A more extended example, including hosting the service and client can be found under `examples/calculator` folder of the project
+A more extended example, including hosting the service and client can be found under [`examples/calculator`](examples/calculator) folder of the project
 ### 1. Define an Interface
 The first step in the implementation of CallR service and client is to define an interface, which both the service and client will implement. This guarantees compile-time check of the implementation. For example:
 ```
@@ -32,7 +32,7 @@ public interface Calculator {
 }
 ```
 ### 2. Implement the Service
-To implement the service, all you need is to inherit from `CallRServiceBase` and implement the interface defined in (1).
+To implement the service, all you need is to inherit from [`CallRServiceBase`](callr-client/src/main/java/org/corefx/callr/client/CallRServiceBase.java) and implement the interface defined in (1).
 ```
 public class CalculatorService extends CallRServiceBase implements Calculator {
 
@@ -47,10 +47,10 @@ public class CalculatorService extends CallRServiceBase implements Calculator {
 }
 ```
 That's it. All the required functionaity for connecting to the hub, registering the service (as a client of the hub),
-receiving the pushed request messages, unwrapping them and calling the respective method is implemented in `CallRServiceBase` and `CallRClient`.
-Note the `CallRClient`is passed as a constructor parameter, but you can use any dependency injection method to inject it from the outside as a bean.
+receiving the pushed request messages, unwrapping them and calling the respective method is implemented in [`CallRServiceBase`](callr-client/src/main/java/org/corefx/callr/client/CallRServiceBase.java) and [`CallRClient`](callr-client/src/main/java/org/corefx/callr/client/CallRClient.java).
+Note the [`CallRClient`](callr-client/src/main/java/org/corefx/callr/client/CallRClient.java)is passed as a constructor parameter, but you can use any dependency injection method to inject it from the outside as a bean.
 ### 3. Implement the Client
-To implement the client, all you need is to inherit from `CallRServiceProxy` and implement the interface by simply calling the `invoke()` method of the base class, passing any parameters you might have.
+To implement the client, all you need is to inherit from [`CallRServiceProxy`](callr-client/src/main/java/org/corefx/callr/client/CallRServiceProxy.java) and implement the interface by simply calling the `invoke()` method of the base class, passing any parameters you might have.
 ```
 public class CalculatorServiceProxy extends CallRServiceProxy implements Calculator {
 
@@ -74,7 +74,7 @@ The hub, services and clients are (must be) hosted in a Spring Boot applicaions.
 ### Hosting the Hub
 To host the hub you need a very simple Spring Boot Web Application. The hub has requirements for the configuration of SSL, Authentication and Authorization. Because of this it is recommended to host the hub standalone in that web application. For our example Calculator system, the hub hosting application looks like this:
 
-<img style="float: left; width:320px" src="hosting-the-hub.png">
+<img style="float: left; width:420px" src="hosting-the-hub.png">
 
 ```
 package org.corefx.callr.example.calculator.hub.host;
@@ -93,7 +93,7 @@ public class CalculatorHubHostApplication {
 
 }
 ```
-The ```application.ylm``` file contains the configuration for the server, web application and hub. For example:
+The [```application.ylm```](examples/calculator/callr-example-calculator-hub-host/src/main/resources/application.yml) file contains the configuration for the server, web application and hub. For example:
 ```yml
 spring:
   main:
