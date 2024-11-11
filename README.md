@@ -72,9 +72,9 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 The hub, services and clients are (must be) hosted in a Spring Boot applicaions. The hub must be hosted in a Spring Boot Web application, while services and clients can be hosted in any kind of web/non-web application.
 
 ### Hosting the Hub
-To host the hub you need a verysimple Spring Boot Web Application. The hub has requirements for the configuration of SSL, Authentication and Authorization. Because of this it is recommended to host the hub standalone in that web application. For our example Calculator system, the hub hosting application looks like this:
+To host the hub you need a very simple Spring Boot Web Application. The hub has requirements for the configuration of SSL, Authentication and Authorization. Because of this it is recommended to host the hub standalone in that web application. For our example Calculator system, the hub hosting application looks like this:
 
-<img style="float: left; width:420px" src="hosting-the-hub.png">
+<img style="float: left; width:320px" src="hosting-the-hub.png">
 
 ```
 package org.corefx.callr.example.calculator.hub.host;
