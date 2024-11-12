@@ -13,14 +13,14 @@
 		<relativePath>../../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>callr-example-calculator-service</artifactId>
+	<artifactId>calculator-service</artifactId>
 	<version>${parent.version}</version>
 
 	<dependencies>
 
 		<dependency>
 			<groupId>org.corefx.callr</groupId>
-			<artifactId>callr-example-calculator</artifactId>
+			<artifactId>calculator</artifactId>
 			<version>1.0.0-SNAPSHOT</version>
 			<scope>compile</scope>
 		</dependency>

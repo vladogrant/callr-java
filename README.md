@@ -166,7 +166,24 @@ CallR communication does dot involve user interaction. This is basically a code-
 Both services and clients authenticate to he hub, and after that they can start exchange messages, that is basically clients can call the services and services can respond to the clients. (Remember, both CallR services and clients are actually clients of the hub)
 
 ### Authorization
+## Example
+A simple `Calculator` example, including the modules for the interface [`Calculator`](examples/calculator/callr-example-calculator/src/main/java/org/corefx/callr/example/calculator/Calculator.java) , the service [`CalculatorService`](examples/calculator/callr-example-calculator-service/src/main/java/org/corefx/callr/example/calculator/service/CalculatorService.java) , the client [`CalculatorServiceProxy`](examples/calculator/callr-example-calculator-client/src/main/java/org/corefx/callr/example/calculator/client/CalculatorServiceProxy.java), hosting the hub, service and client can be found under [`examples/calculator`](examples/calculator) folder of the project. 
 
+### Building and Running the example
+For building and running the example, we assume you have Java, Git and Maven installed and available on your PATH.
+
+1. Clone the repository to a location of your choice
+```
+	git clone https://github.com/vladogrant/callr-java.git
+```
+2. Build the project executing
+```
+	mvn clean install
+```
+3. Start the hub (in a new console/terminal window)
+```
+	java -jar examples\calculator\calculator-hub-host\target\callr-example-calculator-hub-host-1.0.0-SNAPSHOT.jar
+```
 ## Consultancy, Development, Integration and Support
  I provide consultancy, end-to-end service/client development, integration (including the hub infrastructure), deployment and support.
  If you are interested in hiring me, please, send me an email message to [vlado@granitsky.net](mailto:vlado@granitsky.net) and we can start discussing your needs.

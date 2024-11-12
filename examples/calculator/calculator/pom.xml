@@ -13,7 +13,7 @@
 		<relativePath>../../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>callr-example-calculator</artifactId>
+	<artifactId>calculator</artifactId>
 	<version>${parent.version}</version>
 
 </project>

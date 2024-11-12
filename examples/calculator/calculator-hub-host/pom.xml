@@ -12,11 +12,8 @@
 		<relativePath>../../../pom.xml</relativePath>
 	</parent>
 
-	<artifactId>callr-example-calculator-hub-host</artifactId>
+	<artifactId>calculator-hub-host</artifactId>
 	<version>${parent.version}</version>
-
-	<name>callr-example-calculator-hub-host</name>
-	<description>callr-example-calculator-hub-host</description>
 
 	<properties>
 		<java.version>17</java.version>
