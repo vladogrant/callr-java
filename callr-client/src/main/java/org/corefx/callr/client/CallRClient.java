@@ -26,7 +26,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 
 @Slf4j
-public class CallRClient {
+public class CallRClient implements AutoCloseable {
 
 	private final ClientConfigurationProperties config;
 
@@ -38,16 +38,14 @@ public class CallRClient {
 	private Consumer<CallRMessage> messageHandler;
 
 	private static final ObjectMapper json = new ObjectMapper();
-	private static final boolean indent = false;
-
-	static {
-		if(indent)
-			json.enable(SerializationFeature.INDENT_OUTPUT);
-	}
+	private final boolean indent;
 
 	public CallRClient(ClientConfigurationProperties config) {
 		this.config = config;
 		this.id = config.getId();
+		indent = config.getJson() != null && config.getJson().isIndent();
+		if(indent)
+			json.enable(SerializationFeature.INDENT_OUTPUT);
 	}
 
 
@@ -135,6 +133,13 @@ public class CallRClient {
 			log.error(e.getMessage(), e);
 			throw new RuntimeException(e);
 		}
+	}
+
+
+	@Override
+	@SneakyThrows
+	public void close() {
+		session.close();
 	}
 
 

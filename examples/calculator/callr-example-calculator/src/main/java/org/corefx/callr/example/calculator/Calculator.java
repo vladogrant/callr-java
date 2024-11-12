@@ -1,6 +1,6 @@
 package org.corefx.callr.example.calculator;
 
-public interface Calculator {
+public interface Calculator extends AutoCloseable {
 	void ping();
 
 	int add(Integer a, Integer b);

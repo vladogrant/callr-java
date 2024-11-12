@@ -1,5 +1,8 @@
 package org.corefx.callr.client.host;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.corefx.callr.CallRMessage;
 import org.corefx.callr.RequestMessage;
@@ -27,25 +30,52 @@ public class CallRClientHostApplication implements CommandLineRunner {
 	@Autowired
 	CallRClientHostConfigurationProperties config;
 
+	private final Object waitHandle = new Object();
+
 
 	@Override
 	public void run(String... args) throws Exception {
 
-		CallRClient client = new CallRClient(config);
-		client.onMessage(m -> log.info(m.toString()));
-		client.connect();
+		try(CallRClient client = new CallRClient(config)) {
 
-		CallRMessage callRMessage = new CallRMessage();
-		callRMessage.setSender(config.getId());
-		client.send(callRMessage);
+			// Connect to the hub.
+			client.connect();
 
-		RequestMessage requestMessage = new RequestMessage();
-		requestMessage.setSender(config.getId());
-		requestMessage.setReceiver(config.getId());
-		requestMessage.setRequest(UUID.randomUUID());
-		requestMessage.setOperation("<none>");
-		client.send(requestMessage);
+			// Log any incoming message.
+			client.onMessage(m -> {
+				try {
+					log.info(new ObjectMapper().writeValueAsString(m));
+				}
+				catch(JsonProcessingException e) {
+					throw new RuntimeException(e);
+				}
+				synchronized(waitHandle) {
+					waitHandle.notify();
+				}
+			});
 
-		client.disconnect();
+			// Send a "dummy" CallRMessage message to register this client within the hub.
+			// No response will be received.
+			CallRMessage callRMessage = new CallRMessage();
+			callRMessage.setSender(config.getId());
+			client.send(callRMessage);
+
+			// Send a request message to ourselves...
+			// It will go to the hub, get back to us and logged as configured above.
+			RequestMessage requestMessage = new RequestMessage();
+			requestMessage.setSender(config.getId());
+			requestMessage.setReceiver(config.getId());
+			requestMessage.setRequest(UUID.randomUUID());
+			requestMessage.setOperation("<none>");
+			client.send(requestMessage);
+
+			// Wait up to 5 seconds for the message to come.
+			synchronized(waitHandle) {
+				waitHandle.wait(5000);
+			}
+			// client and connection will be automatically gracefully closed.
+		}
+		System.out.println("Press [Enter] to exit...");
+		System.in.read();
 	}
 }

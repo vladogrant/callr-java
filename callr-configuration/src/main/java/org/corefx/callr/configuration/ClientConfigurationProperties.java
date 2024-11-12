@@ -20,6 +20,9 @@ public class ClientConfigurationProperties {
 	private URI uri;
 
 	@NestedConfigurationProperty
+	JsonConfigurationProperties json;
+
+	@NestedConfigurationProperty
 	SslAuthenticationConfigurationProperties ssl;
 
 	@NestedConfigurationProperty

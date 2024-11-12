@@ -34,7 +34,8 @@ callr:
           file: classpath:keystore.jks
           #type: PKCS12
           password: s3cr3t
-
+    json:
+      indent: false
 logging:
   level:
     root: info

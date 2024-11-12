@@ -37,14 +37,15 @@ callr:
               file: classpath:keystore.jks
               #type: PKCS12
               password: s3cr3t
-
-      authorization:
-        user-roles:
-          00000000-0000-0000-0000-A736F2F2FAD3:
-            - adder
-          00000000-0000-0000-0000-A736F2F2FAD4:
-            - adder
-            - divider
+        authorization:
+          user-roles:
+            00000000-0000-0000-0000-A736F2F2FAD3:
+              - adder
+            00000000-0000-0000-0000-A736F2F2FAD4:
+              - adder
+              - divider
+        json:
+          indent: false
 logging:
   level:
     root: error

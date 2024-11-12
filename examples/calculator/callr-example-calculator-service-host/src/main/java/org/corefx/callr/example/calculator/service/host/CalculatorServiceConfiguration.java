@@ -17,11 +17,6 @@ public class CalculatorServiceConfiguration {
 	CalculatorServiceConfigurationProperties config;
 
 
-	public CalculatorServiceConfiguration() {
-
-	}
-
-
 	@Bean
 	Calculator calculator(CallRClient client) {
 		return new CalculatorService(client);

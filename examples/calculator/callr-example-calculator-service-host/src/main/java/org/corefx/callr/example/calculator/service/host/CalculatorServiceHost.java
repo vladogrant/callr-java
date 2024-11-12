@@ -15,7 +15,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @AllArgsConstructor
 public class CalculatorServiceHost implements CommandLineRunner {
 
-	Calculator service;
+
+	Calculator serviceBean;
 
 
 	public static void main(String[] args) {
@@ -26,8 +27,23 @@ public class CalculatorServiceHost implements CommandLineRunner {
 	@SneakyThrows
 	@Override
 	public void run(String... args) {
-		((CallRServiceBase) service).start();
-		System.in.read();
+
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			try {
+				System.out.println("Shutting down...");
+				serviceBean.close();
+			}
+			catch(Exception e) {
+				throw new RuntimeException(e);
+			}
+		}));
+
+
+		try(Calculator service = serviceBean) {
+			((CallRServiceBase) service).start();
+			System.out.println("Press [Enter] to exit...");
+			System.in.read();
+		}
 	}
 
 }

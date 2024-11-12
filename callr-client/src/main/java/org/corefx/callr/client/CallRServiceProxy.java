@@ -14,7 +14,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeoutException;
 
-public abstract class CallRServiceProxy {
+public abstract class CallRServiceProxy implements AutoCloseable {
 
 	private final CallRClient client;
 
@@ -28,11 +28,20 @@ public abstract class CallRServiceProxy {
 	protected CallRServiceProxy(UUID serviceId, CallRClient client) {
 		this.serviceId = serviceId;
 		this.client = client;
-
 		client.onMessage(this::handleMessage);
 		client.connect();
 	}
 
+	public void disconnect()
+	{
+		client.disconnect();
+	}
+
+
+	@Override
+	public void close() throws Exception {
+		client.disconnect();
+	}
 
 	private void handleMessage(CallRMessage message) {
 		ResponseMessage response = (ResponseMessage) message;
