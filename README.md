@@ -3,20 +3,25 @@
 CallR is an open-source, object-oriented RPC library and framework that allows implementing and employing services running behind routers and firewals.
 It frees you, your organization and customers from the need of configuring any port forwardings on the routers, firewalls, setting up VPNs etc.
 ## How it Works (The 'Passive Service' Pattern)
-These so called 'passive services' run on the protected internal network and instead of listening for inbound connetions on specific port, they do a secure outbuond HTTPS (Secure WebSocket) connection to a well-known, available CallR Hub.
-Of course securely, over SSL, employing Authentication and Authorization. On the other side CallR Clients also connect to the hub in the same manner.
-After that, the clients can invoke the service by sending an addressed request message to the hub. The hub pushes the request message to the respective service through the WebSocket connection.
+A CallR Service (service), acts as so called 'passive service'. It runs inside the protected internal network of your customer and instead of listening for inbound connetions on specific port, it does a secure outbuond HTTPS (Secure WebSocket) connection to a well-known, available CallR Hub (hub) running in your network/premises/cloud.
+Of course securely, over SSL, employing Authentication and Authorization. On the other side CallR Service Client (client) also connects to the hub in the same manner.
+After that, the client can invoke the service by sending an addressed request message to the hub. The hub pushes the request message to the respective service through the WebSocket connection.
 In the service, the request message is unwrapped into a method call (using reflection) and the result (or any exception thrown) is obtained. The result then is wrapped into a response message, which is sent back to the hub.
-The hub forwards the response message back to the calling client, where it is unwrapped as a result, which is returned to the calling method (or the exception is thrown). 
+The hub pushes the response message back to the calling client, where it is unwrapped as a result (or exception), which is returned to the calling method (or the exception is thrown). 
+### The hub network. Addressing
+All the clients connected to the hub, being services or service clients (nodes) form the so-called 'hub network'. Inside the hub network these nodes are identified and addressed by their ID (a UUID). IP addresses of the nodes do not matter, as the hub maps the connection ID to the ID of the node. So, if a client wants to call a service it must know and use the node ID of the service inside the hub network. The node ID of the client can be basically any (random) UUID, but it is recommended to configure it as static, because by default it is used in the authentication and authorization mechanisms as an username. Otherwise you'll need to define a username for the client.
+### Common Hub Network Infrastructure Diagram
 ![](common-infrastructure.png)
 ## Common Example Usage and Scenarios
-For an example, imagine you are a SAAS provider, who is providing business software solutions for customers in some branch/industry. You are running a web application in your premises (or in your cloud infrastructure), exposed to your customers where they interact with your software. The customer has a device on their premises that has a digital interface to access the device - read/write data, control the device, manage the device settings etc. The device could be any kind of device - a digital scale or balance, dimensioning device, temperature controller etc. The digital interface of the device also could be of any kind - USB, Serial Interface, Network Protocol, Web Service etc. The customer wants you to integrate the device in your software solution. You need to develop and deploy a service, that will run in the customer network/premises. The service  will talk with the device from one side, and will expose an API to your software from another. 
+For an example (referring to the above diagram), imagine you are a SAAS provider, who is providing business software solutions for customers in some branch/industry. You are running a web application in your premises (or in your cloud infrastructure), exposed to your customers where they interact with your software. The customer has a device on their premises that has a digital interface to access the device - read/write data, control the device, manage the device settings etc. The device could be any kind of device - a digital scale, dimensioning device, temperature controller etc. The digital interface of the device also could be of any kind - USB, Serial Interface, Network Protocol, Web Service etc. The customer wants you to integrate the device in your software solution. You need to develop and deploy a service, that will run in the customer network/premises. The service will talk with the device from one side, and will expose an API to your software from another.
 
 The **ordinary solution** would be to develop an ordinary service that will listen for connections and requests on some TCP/IP port.
 
 Good. However, next you and your customer would need to configure their network in order for this service to be accessible from the outside - opening ports in firewalls, port forwarding on the routers, setting up VPNs etc. In addition, you will need to secure the communication with this service (deploy SSL certificates), implement Authentication mechanisms, and so forth. And this for every one of your customers and every one device they might have.
 
-The **callr (passive service) solution** frees you from all this burden. 
+Furthermore, over the time, the network configuration at the customer's site could change, the device could be moved to another location, conneted to another PC, the IP addresses could change etc. This would require you and your customer to re-configure the whole service setup and configuration.
+
+The **callr (passive service) solution** frees you from all this burden. All it needs is an outbound connection to the Internet.
 
 ## Implementing CallR Services and Clients
 In this section we'll go through what is required in order to implement CallR services and clients.
@@ -186,8 +191,8 @@ TODO
 ### Authorization
 Authorization in implemented as user- and role-based security. User-to-role assignment is applied at the hub on the Authentication phase. A pluggable UserDetailService is used to asign roles to the authenticated user. These roles are forwared to the service, where the actual Authorization apply. You can protect service methods using `Authorized` annotation, defining which users and/or roles are allowed to access the annotated method.
 
-## Building and Running (The Calculator Example)
-A simple `Calculator` example, including the modules for the interface - [`Calculator`](examples/calculator/callr-example-calculator/src/main/java/org/corefx/callr/example/calculator/Calculator.java) , the service - [`CalculatorService`](examples/calculator/callr-example-calculator-service/src/main/java/org/corefx/callr/example/calculator/service/CalculatorService.java) , the client - [`CalculatorServiceProxy`](examples/calculator/callr-example-calculator-client/src/main/java/org/corefx/callr/example/calculator/client/CalculatorServiceProxy.java) , applications hosting the hub, service and client can be found under [`examples/calculator`](examples/calculator) folder of the project. 
+## The Calculator Example
+A simple `Calculator` example, including the modules for the interface - [`Calculator`](examples/calculator/callr-example-calculator/src/main/java/org/corefx/callr/example/calculator/Calculator.java) , the service - [`CalculatorService`](examples/calculator/callr-example-calculator-service/src/main/java/org/corefx/callr/example/calculator/service/CalculatorService.java) , the client - [`CalculatorServiceProxy`](examples/calculator/callr-example-calculator-client/src/main/java/org/corefx/callr/example/calculator/client/CalculatorServiceProxy.java) , the Spring Boot applications hosting the hub, service and client can be found under [`examples/calculator`](examples/calculator) folder of the project. 
 
 ### Building and Running the example
 For building and running the example, we assume you have Java, Git and Maven installed and available on your PATH.
