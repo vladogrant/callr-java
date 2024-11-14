@@ -36,7 +36,7 @@ callr:
                   file: classpath:keystore.jks
                   password: s3cr3t
           json:
-            indent: false
+            indent: true
 logging:
   level:
     root: info

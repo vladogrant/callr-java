@@ -147,7 +147,7 @@ logging:
 
 ## Security
 
-### SSL
+### Transport Layer Securityy (SSL)
 For the hub, SSL is configured in the hosting web application at server level. For example in an application.yml file:
 ```
 server:
@@ -160,14 +160,34 @@ server:
     key-store-password: s3cr3t
 ```
 You need to import the server SSL certificate in the keystore.
+
+On the other side, for services and clients, in the hosting application you'd need to configure a truststore in order to trust the server certificate. I.e. in `application.yml` you'd have something like:
+```
+    ssl:
+      trust-store:
+        file: classpath:truststore.jks
+        password: s3cr3t
+```
+
 ### Authentication
-CallR communication does dot involve user interaction. This is basically a code-to-code, or lets say M2M communication. Because of this nature of communication, there's no user intreface like login forms etc. involved in Authentication mechanisms. CallR suppotrs out-of-the-box variaty of Authentication methods incl. Basic Authentication, Shared Secret(Key), SSL Client Certificate, JWT. These can be easily switched between in the hosting application configuration (```application.yml```). All the  communication is (must be) secured by SSL, so you do not have to worry about man-in-the-middle attacks, sniffilg and stealing your athentication information. 
+CallR communication does not involve user interaction. This is basically a code-to-code, or say M2M communication. Because of this nature of communication, there's no user intreface like login forms etc. involved in Authentication mechanisms. CallR suppotrs variaty of Authentication methods out-of-the-box, incl. Basic Authentication, Shared Secret(Key), SSL Client Certificate, JWT. These can be easily switched between with `authentication.type` key in the hosting application configuration (```application.yml```). All the  communication is (must be) secured by SSL, so you do not have to worry about man-in-the-middle attacks, sniffilg and stealing your athentication information. 
 
 Both services and clients authenticate to he hub, and after that they can start exchange messages, that is basically clients can call the services and services can respond to the clients. (Remember, both CallR services and clients are actually clients of the hub)
 
+#### Basic Authentication
+TODO
+#### Shared Secret/Key Authentication
+TODO
+
+#### SSL Client Certificate Authentication
+TODO
+
+
 ### Authorization
-## Example
-A simple `Calculator` example, including the modules for the interface [`Calculator`](examples/calculator/callr-example-calculator/src/main/java/org/corefx/callr/example/calculator/Calculator.java) , the service [`CalculatorService`](examples/calculator/callr-example-calculator-service/src/main/java/org/corefx/callr/example/calculator/service/CalculatorService.java) , the client [`CalculatorServiceProxy`](examples/calculator/callr-example-calculator-client/src/main/java/org/corefx/callr/example/calculator/client/CalculatorServiceProxy.java), hosting the hub, service and client can be found under [`examples/calculator`](examples/calculator) folder of the project. 
+Authorization in implemented as user- and role-based security. User-to-role assignment is applied at the hub on Autentication. A pluggable UserDetailService is used to asign roles to the authenticated user. These roles are forwared to the service with the RequestMessage, where the actual Authorization apply. You can protect service methods using `Authorized` annotation, defining which users and/or roles are allowed to access the annotated method.
+
+## Building and Running (The Calculator Example)
+A simple `Calculator` example, including the modules for the interface - [`Calculator`](examples/calculator/callr-example-calculator/src/main/java/org/corefx/callr/example/calculator/Calculator.java) , the service - [`CalculatorService`](examples/calculator/callr-example-calculator-service/src/main/java/org/corefx/callr/example/calculator/service/CalculatorService.java) , the client - [`CalculatorServiceProxy`](examples/calculator/callr-example-calculator-client/src/main/java/org/corefx/callr/example/calculator/client/CalculatorServiceProxy.java) , applications hosting the hub, service and client can be found under [`examples/calculator`](examples/calculator) folder of the project. 
 
 ### Building and Running the example
 For building and running the example, we assume you have Java, Git and Maven installed and available on your PATH.
@@ -176,14 +196,25 @@ For building and running the example, we assume you have Java, Git and Maven ins
 ```
 	git clone https://github.com/vladogrant/callr-java.git
 ```
-2. Build the project executing
+2. From that location, build the project executing
 ```
 	mvn clean install
 ```
-3. Start the hub (in a new console/terminal window)
+3. Navigate to `examples/calculator` sub-directory.
+
+4. Start the hub (from the same location, but in a new console/terminal window)
 ```
-	java -jar examples\calculator\calculator-hub-host\target\callr-example-calculator-hub-host-1.0.0-SNAPSHOT.jar
+	java -jar calculator-hub-host/target/calculator-hub-host-1.0.0-SNAPSHOT.jar
 ```
+5. Start the service (from the same location, but in a new console/terminal window)
+```
+	java -jar calculator-service-host/target/calculator-service-host-1.0.0-SNAPSHOT.jar
+```
+6. Start the client (from the same location, but in a new console/terminal window)
+```
+	java -jar calculator-client-host/target/calculator-client-host-1.0.0-SNAPSHOT.jar
+```
+In the console/terminal windows you can see the request/response messages going forth and back as well as the results of calculations done by the service. The last communication demonstrates an exception (divide by zero in case).
 ## Consultancy, Development, Integration and Support
  I provide consultancy, end-to-end service/client development, integration (including the hub infrastructure), deployment and support.
  If you are interested in hiring me, please, send me an email message to [vlado@granitsky.net](mailto:vlado@granitsky.net) and we can start discussing your needs.

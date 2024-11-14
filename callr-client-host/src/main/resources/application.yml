@@ -35,7 +35,7 @@ callr:
           #type: PKCS12
           password: s3cr3t
     json:
-      indent: false
+      indent: true
 logging:
   level:
     root: info

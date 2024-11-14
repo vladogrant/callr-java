@@ -45,7 +45,7 @@ callr:
               - adder
               - divider
         json:
-          indent: false
+          indent: true
 logging:
   level:
     root: error
