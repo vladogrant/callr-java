@@ -9,7 +9,7 @@ The connection and further communication is of course secure, over SSL, employin
 On the other side ***CallR Service Client (the client)*** also connects to the hub in the same manner.
 
 
-After that, the client can invoke the service by sending to the hub a request message addressing the service. The hub pushes the request message to the respective service through the WebSocket connection.
+After that, the client can invoke the service by sending a request message to the hub, addressing the service. The hub pushes the request message to the respective service through the WebSocket connection.
 In the service, the request message is unwrapped into a method call (using reflection) and the result (or any exception thrown) is obtained. The result then is wrapped into a response message, which is sent back to the hub.
 The hub pushes the response message back to the calling client, where it is unwrapped as a result (or exception), which is returned to the calling method (or the exception is thrown). 
 ### The Hub Network. Addressing
