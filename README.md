@@ -1,6 +1,6 @@
 # CallR (Java)
 ## Overview
-CallR is an open-source, object-oriented RPC library and framework that allows implementing and employing services that work seamlesly behind routers and firewals.
+CallR is an open-source, object-oriented RPC library and framework that allows you to easily implement and employ services that work seamlesly behind routers and firewals.
 It frees you, your organization and customers from the need of configuring any port forwardings on the routers, firewalls, setting up VPNs etc.
 ## How it Works (The 'Passive Service' Pattern)
 A ***CallR Service (the service)***, acts as so called '***passive service***'. It runs inside the protected internal network of your customer and instead of listening for inbound connetions on some specific port, it does a secure outbuond HTTPS (Secure WebSocket) connection to a well-known, available ***CallR Hub (the hub)*** running in your network/premises/cloud. That is ***the service acts as a client of the hub***.
@@ -183,7 +183,7 @@ On the other side, for services and clients, in the hosting application you'd ne
 ### Authentication
 CallR communication does not involve user interaction. This is basically a code-to-code, or say M2M communication. Because of this nature of communication, there's no user intreface like login forms etc. involved in Authentication mechanisms. CallR suppotrs variaty of Authentication methods out-of-the-box, incl. Basic Authentication, Shared Secret(Key), SSL Client Certificate, JWT. These can be easily switched between with `authentication.type` key in the hosting application configuration (```application.yml```). All the  communication is (and must be) secured by SSL, so you do not have to worry about man-in-the-middle attacks, sniffilg and stealing your athentication information. 
 
-Both services and clients authenticate to he hub, and after that they can start exchange messages, that is basically clients can call the services and services can respond to the clients. (Remember, both CallR services and clients are actually clients of the hub)
+Both services and clients authenticate to the hub, and after that they can start exchange messages, that is basically clients can call the services and services can respond to the clients. (Remember, both CallR services and clients are actually clients of the hub)
 
 #### Basic Authentication
 TODO
@@ -225,7 +225,7 @@ For building and running the example, we assume you have Java, Git and Maven ins
 ```
 	java -jar calculator-client-host/target/calculator-client-host-1.0.0-SNAPSHOT.jar
 ```
-In the console/terminal windows you can see the request/response messages going forth and back as well as the results of calculations done by the service. The last communication demonstrates an exception (divide by zero in case).
+In the console/terminal windows of the client you can see the request/response messages going forth and back as well as the results of calculations done by the service. The last communication demonstrates an exception (divide by zero in case).
 ## Consultancy, Development, Integration and Support
  I provide consultancy, end-to-end service/client development, integration (including the hub infrastructure), deployment and support.
  If you are interested in hiring me, please, send me an email message to [vlado@granitsky.net](mailto:vlado@granitsky.net) and we can start discussing your needs.
