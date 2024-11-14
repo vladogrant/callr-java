@@ -17,10 +17,6 @@
 	<name>callr-hub-host</name>
 	<description>callr-hub-host</description>
 
-	<properties>
-		<java.version>17</java.version>
-	</properties>
-
 	<dependencies>
 
 		<dependency>

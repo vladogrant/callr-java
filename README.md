@@ -23,7 +23,7 @@ For an example (referring to the above diagram), imagine you are a SAAS provider
 
 The ***ordinary solution*** would be to develop an ordinary service that will listen for connections and requests on some TCP/IP port.
 
-Good. However, next you and your customer would need to configure their network in order for this service to be accessible from the outside - opening ports in firewalls, port forwarding on the routers, setting up VPNs etc. In addition, you will need to secure the communication with this service (deploy SSL certificates), implement Authentication and Authorization mechanisms, and so forth. And this for every one of your customers and every one device they might have.
+Good. However, next you and your customer would need to configure their network in order for this service to be accessible from the outside - opening ports in firewalls, port forwarding on the routers, setting up VPNs etc. In addition, you will need to secure the communication with this service - configure SSL, implement Authentication and Authorization mechanisms, and so forth. And this for every one of your customers and every one device they might have.
 
 Furthermore, over the time, the network configuration at the customer's site could change, the device could be moved to another location, conneted to another PC, the IP addresses could change etc. This would require you and your customer to re-configure the whole service access setup.
 
