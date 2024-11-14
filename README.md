@@ -79,6 +79,7 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 
 }
 ```
+The `invoke()` method of the base class `CallRServiceProxy` does all the job to figure out which method did the call, constructs the request message with the sender and receiver IDs, request ID, operation name, parameters and using the `CallRClient` sends it to the hub to be pushed to the service.
 ## Hosting
 The hub, services and clients are (must be) hosted in a Spring Boot applicaions. The hub must be hosted in a Spring Boot Web application, while services and clients can be hosted in any kind of web/non-web application.
 
