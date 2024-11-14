@@ -1,27 +1,33 @@
 # CallR (Java)
 ## Overview
-CallR is an open-source, object-oriented RPC library and framework that allows implementing and employing services running behind routers and firewals.
+CallR is an open-source, object-oriented RPC library and framework that allows implementing and employing services that work seamlesly behind routers and firewals.
 It frees you, your organization and customers from the need of configuring any port forwardings on the routers, firewalls, setting up VPNs etc.
 ## How it Works (The 'Passive Service' Pattern)
-A CallR Service (service), acts as so called 'passive service'. It runs inside the protected internal network of your customer and instead of listening for inbound connetions on specific port, it does a secure outbuond HTTPS (Secure WebSocket) connection to a well-known, available CallR Hub (hub) running in your network/premises/cloud.
-Of course securely, over SSL, employing Authentication and Authorization. On the other side CallR Service Client (client) also connects to the hub in the same manner.
-After that, the client can invoke the service by sending an addressed request message to the hub. The hub pushes the request message to the respective service through the WebSocket connection.
+A ***CallR Service (the service)***, acts as so called '***passive service***'. It runs inside the protected internal network of your customer and instead of listening for inbound connetions on some specific port, it does a secure outbuond HTTPS (Secure WebSocket) connection to a well-known, available ***CallR Hub (the hub)*** running in your network/premises/cloud. That is ***the service acts as a client of the hub***.
+The connection and further communication is of course secure, over SSL, employing Authentication and Authorization.
+
+On the other side ***CallR Service Client (the client)*** also connects to the hub in the same manner.
+
+
+After that, the client can invoke the service by sending to the hub a request message addressed to the service. The hub pushes the request message to the respective service through the WebSocket connection.
 In the service, the request message is unwrapped into a method call (using reflection) and the result (or any exception thrown) is obtained. The result then is wrapped into a response message, which is sent back to the hub.
 The hub pushes the response message back to the calling client, where it is unwrapped as a result (or exception), which is returned to the calling method (or the exception is thrown). 
-### The hub network. Addressing
-All the clients connected to the hub, being services or service clients (nodes) form the so-called 'hub network'. Inside the hub network these nodes are identified and addressed by their ID (a UUID). IP addresses of the nodes do not matter, as the hub maps the connection ID to the ID of the node. So, if a client wants to call a service it must know and use the node ID of the service inside the hub network. The node ID of the client can be basically any (random) UUID, but it is recommended to configure it as static, because by default it is used in the authentication and authorization mechanisms as an username. Otherwise you'll need to define a username for the client.
+### The Hub Network. Addressing
+All the nodes connected to the hub (being services or clients) form the so called '***hub network***'. Inside the hub network these nodes are identified and addressed by their ID (an UUID). Immediatelly after connecting to the hub, the node registers it's ID to the hub and the hub maps the connection ID to the ID of the node. This way the IP addresses of the nodes do not matter. Even if the connection drops and then reconnects, the node changes it's location, IP address etc. , once connected the node will have the same address (ID) inside the hub network and will remain addressable and reachable.
+
+ So, if a client wants to call a service it must know and use the node ID of the service inside the hub network. The node ID of a service must be permanent as it must be well-known to the clients. The node ID of the client can be basically any (random) UUID, but it is recommended to configure it as permanent, because by default it is used in the authentication and authorization mechanisms as an User ID. Otherwise you'll need to define a separate User ID for the client.
 ### Common Hub Network Infrastructure Diagram
 ![](common-infrastructure.png)
 ## Common Example Usage and Scenarios
-For an example (referring to the above diagram), imagine you are a SAAS provider, who is providing business software solutions for customers in some branch/industry. You are running a web application in your premises (or in your cloud infrastructure), exposed to your customers where they interact with your software. The customer has a device on their premises that has a digital interface to access the device - read/write data, control the device, manage the device settings etc. The device could be any kind of device - a digital scale, dimensioning device, temperature controller etc. The digital interface of the device also could be of any kind - USB, Serial Interface, Network Protocol, Web Service etc. The customer wants you to integrate the device in your software solution. You need to develop and deploy a service, that will run in the customer network/premises. The service will talk with the device from one side, and will expose an API to your software from another.
+For an example (referring to the above diagram), imagine you are a SAAS provider (on the right), who is providing business software solutions for customers in some branch/industry. You are running a web application in your premises (or in your cloud infrastructure), exposed to your customers where they interact with your software. The customer (on the left) has a device in their premises that has a digital interface to access the device - *read/write data, control the device, manage the device settings etc.* The device could be any kind of device - *a digital scale, dimensioning device, temperature controller etc.* The digital interface of the device also could be of any kind - *USB, Serial Interface, Network Protocol, Web Service etc.* The customer wants you to integrate the device in your software solution. You need to develop and deploy a service, that will run in the customer network/premises. The service will talk with the device from one side, and will expose an API to your software from another.
 
-The **ordinary solution** would be to develop an ordinary service that will listen for connections and requests on some TCP/IP port.
+The ***ordinary solution*** would be to develop an ordinary service that will listen for connections and requests on some TCP/IP port.
 
-Good. However, next you and your customer would need to configure their network in order for this service to be accessible from the outside - opening ports in firewalls, port forwarding on the routers, setting up VPNs etc. In addition, you will need to secure the communication with this service (deploy SSL certificates), implement Authentication mechanisms, and so forth. And this for every one of your customers and every one device they might have.
+Good. However, next you and your customer would need to configure their network in order for this service to be accessible from the outside - opening ports in firewalls, port forwarding on the routers, setting up VPNs etc. In addition, you will need to secure the communication with this service (deploy SSL certificates), implement Authentication and Authorization mechanisms, and so forth. And this for every one of your customers and every one device they might have.
 
-Furthermore, over the time, the network configuration at the customer's site could change, the device could be moved to another location, conneted to another PC, the IP addresses could change etc. This would require you and your customer to re-configure the whole service setup and configuration.
+Furthermore, over the time, the network configuration at the customer's site could change, the device could be moved to another location, conneted to another PC, the IP addresses could change etc. This would require you and your customer to re-configure the whole service access setup.
 
-The **callr (passive service) solution** frees you from all this burden. All it needs is an outbound connection to the Internet.
+The ***CallR (passive service) solution*** frees you from all this burden. All it needs is an outbound connection to the Internet.
 
 ## Implementing CallR Services and Clients
 In this section we'll go through what is required in order to implement CallR services and clients.
@@ -175,7 +181,7 @@ On the other side, for services and clients, in the hosting application you'd ne
 ```
 
 ### Authentication
-CallR communication does not involve user interaction. This is basically a code-to-code, or say M2M communication. Because of this nature of communication, there's no user intreface like login forms etc. involved in Authentication mechanisms. CallR suppotrs variaty of Authentication methods out-of-the-box, incl. Basic Authentication, Shared Secret(Key), SSL Client Certificate, JWT. These can be easily switched between with `authentication.type` key in the hosting application configuration (```application.yml```). All the  communication is (must be) secured by SSL, so you do not have to worry about man-in-the-middle attacks, sniffilg and stealing your athentication information. 
+CallR communication does not involve user interaction. This is basically a code-to-code, or say M2M communication. Because of this nature of communication, there's no user intreface like login forms etc. involved in Authentication mechanisms. CallR suppotrs variaty of Authentication methods out-of-the-box, incl. Basic Authentication, Shared Secret(Key), SSL Client Certificate, JWT. These can be easily switched between with `authentication.type` key in the hosting application configuration (```application.yml```). All the  communication is (and must be) secured by SSL, so you do not have to worry about man-in-the-middle attacks, sniffilg and stealing your athentication information. 
 
 Both services and clients authenticate to he hub, and after that they can start exchange messages, that is basically clients can call the services and services can respond to the clients. (Remember, both CallR services and clients are actually clients of the hub)
 
