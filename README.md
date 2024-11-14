@@ -184,7 +184,7 @@ TODO
 
 
 ### Authorization
-Authorization in implemented as user- and role-based security. User-to-role assignment is applied at the hub on Autentication. A pluggable UserDetailService is used to asign roles to the authenticated user. These roles are forwared to the service with the RequestMessage, where the actual Authorization apply. You can protect service methods using `Authorized` annotation, defining which users and/or roles are allowed to access the annotated method.
+Authorization in implemented as user- and role-based security. User-to-role assignment is applied at the hub on the Authentication phase. A pluggable UserDetailService is used to asign roles to the authenticated user. These roles are forwared to the service, where the actual Authorization apply. You can protect service methods using `Authorized` annotation, defining which users and/or roles are allowed to access the annotated method.
 
 ## Building and Running (The Calculator Example)
 A simple `Calculator` example, including the modules for the interface - [`Calculator`](examples/calculator/callr-example-calculator/src/main/java/org/corefx/callr/example/calculator/Calculator.java) , the service - [`CalculatorService`](examples/calculator/callr-example-calculator-service/src/main/java/org/corefx/callr/example/calculator/service/CalculatorService.java) , the client - [`CalculatorServiceProxy`](examples/calculator/callr-example-calculator-client/src/main/java/org/corefx/callr/example/calculator/client/CalculatorServiceProxy.java) , applications hosting the hub, service and client can be found under [`examples/calculator`](examples/calculator) folder of the project. 
