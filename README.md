@@ -107,51 +107,36 @@ public class CalculatorHubHostApplication {
 ```
 The [```application.ylm```](examples/calculator/callr-example-calculator-hub-host/src/main/resources/application.yml) file contains the configuration for the server, web application and hub. For example:
 ```yml
-spring:
-  main:
-    banner-mode: off
-
 server:
-  port: 9443
+  port: 8443
   ssl:
     enabled: true
     key-store-type: JKS
     key-store: classpath:keystore.jks
     key-alias: localhost
     key-store-password: s3cr3t
-    trust-store-type: JKS
-    trust-store: classpath:truststore.jks
-    trust-store-password: s3cr3t
-    client-auth: need
 callr:
   protocol: wss
   host: localhost
-  port: 9443
+  port: 8443
   path: /
   uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}
 
   authentication:
-    type: ssl # basic, key, ssl, jwt...
-    key:
-      header: x-auth-secret
-      secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
+    type: basic # basic, key, ssl
     basic:
       secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
+
   authorization:
     user-roles:
       00000000-0000-0000-0000-A736F2F2FAD2:
-      00000000-0000-0000-0000-A736F2F2FAD3:
         - adder
+      00000000-0000-0000-0000-A736F2F2FAD3:
+        - divider
       00000000-0000-0000-0000-A736F2F2FAD4:
         - adder
         - divider
-logging:
-  level:
-    root: info
-    org.corefx.callr: debug
-
 ```
-
 
 ### Hosting the Service
 
@@ -182,7 +167,7 @@ On the other side, for services and clients, in the hosting application you'd ne
 ```
 
 ### Authentication
-CallR communication does not involve user interaction. This is basically a code-to-code, or say M2M communication. Because of this nature of communication, there's no user intreface like login forms etc. involved in Authentication mechanisms. CallR suppotrs variaty of Authentication methods out-of-the-box, incl. Basic Authentication, Shared Secret(Key), SSL Client Certificate, JWT. These can be easily switched between with `authentication.type` key in the hosting application configuration (```application.yml```). All the  communication is (and must be) secured by SSL, so you do not have to worry about man-in-the-middle attacks, sniffilg and stealing your athentication information. 
+CallR communication does not involve user interaction. This is basically a code-to-code, or say M2M communication. Because of this nature of communication, there's no user intreface like login forms etc. involved in Authentication mechanisms. CallR suppotrs variaty of Authentication methods out-of-the-box - Basic Authentication, Shared Secret(Key), SSL Client Certificate. These can be easily switched between with `authentication.type` key in the hosting application configuration (```application.yml```). All the  communication is (and must be) secured by SSL, so you do not have to worry about man-in-the-middle attacks, sniffilg and stealing your athentication information. 
 
 Both services and clients authenticate to the hub, and after that they can start exchange messages, that is basically clients can call the services and services can respond to the clients. (Remember, both CallR services and clients are actually clients of the hub)
 

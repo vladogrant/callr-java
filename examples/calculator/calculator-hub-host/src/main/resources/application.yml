@@ -22,7 +22,7 @@ callr:
   uri: ${callr.protocol}://${callr.host}:${callr.port}${callr.path}
 
   authentication:
-    type: ssl # basic, key, ssl, jwt...
+    type: ssl # basic, key, ssl
     key:
       header: x-auth-secret
       secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
@@ -31,8 +31,9 @@ callr:
   authorization:
     user-roles:
       00000000-0000-0000-0000-A736F2F2FAD2:
-      00000000-0000-0000-0000-A736F2F2FAD3:
         - adder
+      00000000-0000-0000-0000-A736F2F2FAD3:
+        - divider
       00000000-0000-0000-0000-A736F2F2FAD4:
         - adder
         - divider

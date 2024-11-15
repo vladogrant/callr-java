@@ -14,29 +14,28 @@ callr:
 
   example:
     calculator:
-        client:
-          id: 00000000-0000-0000-0000-A736F2F2FAD3
-          service-id: 00000000-0000-0000-0000-A736F2F2FAD2
-          uri: ${callr.uri}
+      client:
+        id: 00000000-0000-0000-0000-A736F2F2FAD3
+        service-id: 00000000-0000-0000-0000-A736F2F2FAD2
+        uri: ${callr.uri}
+        ssl:
+          trust-store:
+            file: classpath:truststore.jks
+            password: s3cr3t
+        authentication:
+          type: ssl # basic, key, ssl
+          key:
+            header: x-auth-secret
+            secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
+          basic:
+            # id: 00000000-0000-0000-0000-A736F2F2FAD3 # defaults to client id
+            secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
           ssl:
-            #enabled: true
-            trust-store:
-              file: classpath:truststore.jks
-              password: s3cr3t
-          authentication:
-            type: ssl # basic, key, ssl, jwt...
-            key:
-              header: x-auth-secret
-              secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
-            basic:
-              # id: 00000000-0000-0000-0000-A736F2F2FAD2
-              secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
-            ssl:
-              key-store:
-                  file: classpath:keystore.jks
-                  password: s3cr3t
-          json:
-            indent: true
+            key-store:
+                file: classpath:keystore.jks
+                password: s3cr3t
+        json:
+          indent: true
 logging:
   level:
     root: info

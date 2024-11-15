@@ -16,23 +16,20 @@ callr:
     id: 00000000-0000-0000-0000-A736F2F2FAD1
     uri: ${callr.uri}
     ssl:
-      #enabled: true
       trust-store:
         file: classpath:truststore.jks
-        #type: PKCS12
         password: s3cr3t
     authentication:
-      type: ssl # basic, key, ssl, jwt...
+      type: ssl # basic, key, ssl
       key:
         header: x-auth-secret
         secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
       basic:
-        # id: 00000000-0000-0000-0000-A736F2F2FAD2
+      # id: 00000000-0000-0000-0000-A736F2F2FAD1 # defaults to client id
         secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
       ssl:
         key-store:
           file: classpath:keystore.jks
-          #type: PKCS12
           password: s3cr3t
     json:
       indent: true
