@@ -61,7 +61,7 @@ That's it. All the required functionaity for connecting to the hub, registering 
 receiving the pushed request messages, unwrapping them and calling the respective method is implemented in [`CallRServiceBase`](callr-client/src/main/java/org/corefx/callr/client/CallRServiceBase.java) and [`CallRClient`](callr-client/src/main/java/org/corefx/callr/client/CallRClient.java).
 Note the [`CallRClient`](callr-client/src/main/java/org/corefx/callr/client/CallRClient.java)is passed as a constructor parameter, but you can use any dependency injection method to inject it from the outside as a bean.
 ### 3. Implement the Client
-To implement the client, all you need is to inherit from [`CallRServiceProxy`](callr-client/src/main/java/org/corefx/callr/client/CallRServiceProxy.java) and implement the interface by simply calling the `invoke()` method of the base class, passing any parameters you might have.
+To implement the client, all you need is to inherit from [`CallRServiceProxy`](callr-client/src/main/java/org/corefx/callr/client/CallRServiceProxy.java) and implement the interface by simply calling the [`invoke()`](https://github.com/vladogrant/callr-java/blob/20527e9454b74d91f8136e81889c49bb0c992615/callr-client/src/main/java/org/corefx/callr/client/CallRServiceProxy.java#L59) method of the base class, passing any parameters you might have.
 ```
 public class CalculatorServiceProxy extends CallRServiceProxy implements Calculator {
 
@@ -79,7 +79,7 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 
 }
 ```
-The `invoke()` method of the base class `CallRServiceProxy` does all the job to figure out which method did the call, constructs the request message with the sender and receiver IDs, request ID, operation name, parameters and using the `CallRClient` sends it to the hub to be pushed to the service.
+The [`invoke()`](https://github.com/vladogrant/callr-java/blob/20527e9454b74d91f8136e81889c49bb0c992615/callr-client/src/main/java/org/corefx/callr/client/CallRServiceProxy.java#L59) method of the base class `CallRServiceProxy` does all the job to figure out which method did the call, constructs the request message with the sender and receiver IDs, request ID, operation name, parameters and using the `CallRClient` sends it to the hub to be pushed to the service.
 ## Hosting
 The hub, services and clients are (must be) hosted in a Spring Boot applicaions. The hub must be hosted in a Spring Boot Web application, while services and clients can be hosted in any kind of web/non-web application.
 
