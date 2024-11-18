@@ -1,5 +1,6 @@
 package org.corefx.callr.hub;
 
+import lombok.AllArgsConstructor;
 import org.corefx.callr.configuration.AuthenticationConfigurationProperties;
 import org.corefx.callr.configuration.AuthorizationConfigurationProperties;
 import org.corefx.callr.configuration.BasicAuthenticationConfigurationProperties;
@@ -17,13 +18,12 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 
 @Component
+@AllArgsConstructor
 public class ConfigurationPropertiesUserDetailsService implements UserDetailsService {
 
-	@Autowired
-	private GlobalConfigurationProperties config;
+	private final GlobalConfigurationProperties config;
 
-	@Autowired
-	private PasswordEncoder passwordEncoder;
+	private final PasswordEncoder passwordEncoder;
 
 
 	@Override

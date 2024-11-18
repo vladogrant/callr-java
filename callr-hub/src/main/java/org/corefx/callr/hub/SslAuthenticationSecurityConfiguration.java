@@ -1,5 +1,6 @@
 package org.corefx.callr.hub;
 
+import lombok.AllArgsConstructor;
 import org.corefx.callr.configuration.GlobalConfigurationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -15,10 +16,10 @@ import org.springframework.security.web.SecurityFilterChain;
 @ConditionalOnProperty(name = "callr.authentication.type", havingValue = "ssl")
 @EnableWebSecurity
 @EnableConfigurationProperties(GlobalConfigurationProperties.class)
+@AllArgsConstructor
 public class SslAuthenticationSecurityConfiguration {
 
-	@Autowired
-	UserDetailsService userDetailsService;
+	private final UserDetailsService userDetailsService;
 
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {

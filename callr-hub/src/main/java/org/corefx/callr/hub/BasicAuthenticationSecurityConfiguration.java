@@ -1,5 +1,6 @@
 package org.corefx.callr.hub;
 
+import lombok.AllArgsConstructor;
 import org.corefx.callr.configuration.GlobalConfigurationProperties;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -16,13 +17,12 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @ConditionalOnProperty(name = "callr.authentication.type", havingValue = "basic")
 @EnableWebSecurity
 @EnableConfigurationProperties(GlobalConfigurationProperties.class)
+@AllArgsConstructor
 public class BasicAuthenticationSecurityConfiguration {
 
-	@Autowired
-	private RestAuthenticationEntryPoint authenticationEntryPoint;
+	private final RestAuthenticationEntryPoint authenticationEntryPoint;
 
-	@Autowired
-	UserDetailsService userDetailsService;
+	private final UserDetailsService userDetailsService;
 
 
 	@Bean
@@ -30,7 +30,7 @@ public class BasicAuthenticationSecurityConfiguration {
 		httpSecurity
 				.authorizeHttpRequests(customizer -> customizer.anyRequest().authenticated())
 				.httpBasic(config -> config.authenticationEntryPoint(authenticationEntryPoint))
-				.addFilterAfter(new CustomFilter(), BasicAuthenticationFilter.class)
+				.addFilterAfter((request, response, chain) -> chain.doFilter(request, response), BasicAuthenticationFilter.class)
 				.userDetailsService(userDetailsService);
 		;
 		return httpSecurity.build();
