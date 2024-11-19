@@ -34,7 +34,8 @@ callr:
     user-roles:
       00000000-0000-0000-0000-A736F2F2FAD1:
         - generic
-
+  json:
+    indent: true
 logging:
   level:
     root: info

@@ -43,8 +43,8 @@ public class CallRClient implements AutoCloseable {
 	public CallRClient(ClientConfigurationProperties config) {
 		this.config = config;
 		this.id = config.getId();
-		indent = config.getJson() != null && config.getJson().isIndent();
-		if(indent)
+		this.indent = config.getJson() != null && config.getJson().isIndent();
+		if(this.indent)
 			json.enable(SerializationFeature.INDENT_OUTPUT);
 	}
 
@@ -126,8 +126,8 @@ public class CallRClient implements AutoCloseable {
 			payload = json.writeValueAsString(m);
 			TextMessage message = new TextMessage(payload);
 			session.sendMessage(message);
-			log.info("Message sent: [" + session.getId() + "]");
-			log.debug((indent ? System.lineSeparator() : "") + payload);
+			log.info("Message sent: [{}]", session.getId());
+			log.debug("{}{}", indent ? System.lineSeparator() : "", payload);
 		}
 		catch(IOException e) {
 			log.error(e.getMessage(), e);
@@ -161,6 +161,8 @@ public class CallRClient implements AutoCloseable {
 			}
 			try {
 				session.sendMessage(new TextMessage(payload));
+				log.info("Message sent: [{}]", session.getId());
+				log.debug("{}{}", indent ? System.lineSeparator() : "", payload);
 			}
 			catch(IOException e) {
 				log.error(e.getMessage(), e);

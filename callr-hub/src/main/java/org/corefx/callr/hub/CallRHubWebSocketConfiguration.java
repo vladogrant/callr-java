@@ -1,7 +1,10 @@
 package org.corefx.callr.hub;
 
 import lombok.extern.slf4j.Slf4j;
+import org.corefx.callr.configuration.GlobalConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.HttpRequestHandler;
@@ -19,16 +22,25 @@ import java.util.Map;
 
 @Slf4j
 @Configuration
+@EnableConfigurationProperties(GlobalConfigurationProperties.class)
+
 public class CallRHubWebSocketConfiguration {
 
 	@Value("${callr.uri}")
 	URI uri;
 
+	private final	GlobalConfigurationProperties config;
+
+
+	public CallRHubWebSocketConfiguration(GlobalConfigurationProperties config) {
+		this.config = config;
+	}
+
 
 	@Bean
 	WebSocketHandler callrWebSocketHandler() {
 		log.info("Creating CallR WebSocket Handler");
-		return new CallRHub();
+		return new CallRHub(config);
 	}
 
 

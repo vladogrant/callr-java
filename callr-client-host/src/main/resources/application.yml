@@ -37,3 +37,4 @@ logging:
   level:
     root: info
     org.corefx.callr: debug
+    org.corefx.callr.client.host: info

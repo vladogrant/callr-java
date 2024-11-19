@@ -23,4 +23,8 @@ public class GlobalConfigurationProperties {
 	@NestedConfigurationProperty
 	AuthorizationConfigurationProperties authorization;
 
+	@NestedConfigurationProperty
+	JsonConfigurationProperties json;
+
+
 }

@@ -2,6 +2,7 @@ package org.corefx.callr.client.host;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.corefx.callr.CallRMessage;
@@ -22,19 +23,27 @@ import java.util.UUID;
 @EnableConfigurationProperties
 public class CallRClientHostApplication implements CommandLineRunner {
 
+	public CallRClientHostApplication(CallRClientHostConfigurationProperties config) {
+		this.config = config;
+	}
+
+
 	public static void main(String[] args) {
 		SpringApplication.run(CallRClientHostApplication.class, args);
 	}
 
-
-	@Autowired
-	CallRClientHostConfigurationProperties config;
+	private final	CallRClientHostConfigurationProperties config;
 
 	private final Object waitHandle = new Object();
 
 
 	@Override
 	public void run(String... args) throws Exception {
+
+		ObjectMapper json = new ObjectMapper();
+		boolean indent = config.getJson() != null && config.getJson().isIndent();
+		if(indent)
+			json.enable(SerializationFeature.INDENT_OUTPUT);
 
 		try(CallRClient client = new CallRClient(config)) {
 
@@ -44,7 +53,7 @@ public class CallRClientHostApplication implements CommandLineRunner {
 			// Log any incoming message.
 			client.onMessage(m -> {
 				try {
-					log.info(new ObjectMapper().writeValueAsString(m));
+					log.info("Message received: {}{}", indent ? System.lineSeparator() : "", json.writeValueAsString(m));
 				}
 				catch(JsonProcessingException e) {
 					throw new RuntimeException(e);
@@ -54,20 +63,15 @@ public class CallRClientHostApplication implements CommandLineRunner {
 				}
 			});
 
-			// Send a "dummy" CallRMessage message to register this client within the hub.
-			// No response will be received.
-			CallRMessage callRMessage = new CallRMessage();
-			callRMessage.setSender(config.getId());
-			client.send(callRMessage);
-
 			// Send a request message to ourselves...
 			// It will go to the hub, get back to us and logged as configured above.
-			RequestMessage requestMessage = new RequestMessage();
-			requestMessage.setSender(config.getId());
-			requestMessage.setReceiver(config.getId());
-			requestMessage.setRequest(UUID.randomUUID());
-			requestMessage.setOperation("<none>");
-			client.send(requestMessage);
+			RequestMessage m = new RequestMessage();
+			m.setSender(config.getId());
+			m.setReceiver(config.getId());
+			m.setRequest(UUID.randomUUID());
+			m.setOperation("<none>");
+			client.send(m);
+			log.info("Message sent: {}{}", indent ? System.lineSeparator() : "", json.writeValueAsString(m));
 
 			// Wait up to 5 seconds for the message to come.
 			synchronized(waitHandle) {
