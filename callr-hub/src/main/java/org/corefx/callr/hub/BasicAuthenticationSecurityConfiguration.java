@@ -1,8 +1,8 @@
 package org.corefx.callr.hub;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import org.corefx.callr.configuration.GlobalConfigurationProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +20,6 @@ import org.springframework.security.web.authentication.www.BasicAuthenticationFi
 @AllArgsConstructor
 public class BasicAuthenticationSecurityConfiguration {
 
-	private final RestAuthenticationEntryPoint authenticationEntryPoint;
 
 	private final UserDetailsService userDetailsService;
 
@@ -29,9 +28,10 @@ public class BasicAuthenticationSecurityConfiguration {
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
 				.authorizeHttpRequests(customizer -> customizer.anyRequest().authenticated())
-				.httpBasic(config -> config.authenticationEntryPoint(authenticationEntryPoint))
+				.httpBasic(config -> config.authenticationEntryPoint((request, response, authException) ->
+						response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Unauthorized")))
 				.addFilterAfter((request, response, chain) -> chain.doFilter(request, response), BasicAuthenticationFilter.class)
-				.userDetailsService(userDetailsService);
+				.userDetailsService(userDetailsService)
 		;
 		return httpSecurity.build();
 	}
