@@ -1,15 +1,15 @@
 package org.corefx.callr.client;
 
 import lombok.extern.slf4j.Slf4j;
-import org.corefx.callr.CallRMessage;
-import org.corefx.callr.RequestMessage;
-import org.corefx.callr.ResponseMessage;
+import org.corefx.callr.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.List;
+import java.util.stream.Stream;
 
 @Slf4j
 public abstract class CallRServiceBase implements AutoCloseable {
@@ -51,7 +51,21 @@ public abstract class CallRServiceBase implements AutoCloseable {
 				parameterTypes[i] = Class.forName(request.getParameters().get(i).getType());
 			}
 			Method method = this.getClass().getMethod(request.getOperation(), parameterTypes);
-			Object[] parameterValues = request.getParameters().stream().map(p -> p.getValue()).toArray();
+
+			Authorized authorized = method.getAnnotation(Authorized.class);
+			if(authorized != null && authorized.roles() != null) {
+				List<String> roles = Stream.of(authorized.roles()).map(String::toUpperCase).toList();
+				List<String> authorities = request.getAuthorities();
+				if(authorities == null || authorities.isEmpty()) {
+					throw new NotAuthorizedException();
+				}
+				authorities = authorities.stream().map(a -> a.toUpperCase().replaceFirst("^ROLE_", "")).toList();
+				if(authorities.stream().noneMatch(roles::contains)) {
+					throw new NotAuthorizedException();
+				}
+			}
+
+			Object[] parameterValues = request.getParameters().stream().map(Parameter::getValue).toArray();
 			Object result = method.invoke(this, parameterValues);
 			response.setResult(result);
 		}
@@ -67,8 +81,6 @@ public abstract class CallRServiceBase implements AutoCloseable {
 			catch(IOException e) {
 				throw new RuntimeException(e);
 			}
-
-
 		}
 		client.send(response);
 	}
