@@ -34,13 +34,19 @@ public abstract class CallRServiceBase implements AutoCloseable {
 
 
 	@Override
-	public void close() throws Exception {
+	public void close() {
 		client.disconnect();
 	}
 
 
 	private void handleMessage(CallRMessage message) {
-		RequestMessage request = (RequestMessage) message;
+		if(RequestMessage.class.equals(message.getClass())) {
+			handleRequestMessage((RequestMessage) message);
+		}
+	}
+
+
+	private void handleRequestMessage(RequestMessage request) {
 		ResponseMessage response = new ResponseMessage();
 		response.setSender(client.getId());
 		response.setReceiver(request.getSender());
