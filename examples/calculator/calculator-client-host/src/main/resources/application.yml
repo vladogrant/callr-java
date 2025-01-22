@@ -15,7 +15,7 @@ callr:
   example:
     calculator:
       client:
-        id: 00000000-0000-0000-0000-A736F2F2FAD3
+        id: 00000000-0000-0000-0000-A736F2F2FAD5
         service-id: 00000000-0000-0000-0000-A736F2F2FAD2
         uri: ${callr.uri}
         ssl:

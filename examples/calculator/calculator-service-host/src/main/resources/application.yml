@@ -31,7 +31,7 @@ callr:
             secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
           ssl:
             key-store:
-              file: classpath:keystore.jks
+              file: classpath:00000000-0000-0000-0000-A736F2F2FAD2.jks
               password: s3cr3t
         json:
           indent: true

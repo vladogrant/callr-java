@@ -1,0 +1,10 @@
+#!/bin/bash
+echo === CONTAINERS ===
+docker ps -a
+echo
+echo === IMAGES ===
+docker image ls
+echo
+echo === NETWORKS ===
+docker network ls
+

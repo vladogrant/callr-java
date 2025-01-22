@@ -7,8 +7,8 @@ server:
   ssl:
     enabled: true
     key-store-type: JKS
-    key-store: classpath:keystore.jks
-    key-alias: localhost
+    key-store: classpath:${callr.host}.jks
+    key-alias: ${callr.host}
     key-store-password: s3cr3t
     trust-store-type: JKS
     trust-store: classpath:truststore.jks

@@ -1,0 +1,5 @@
+#!/bin/bash
+docker network create callr
+docker compose up --build -d
+mate-terminal --tab --title="callr-hub" -e "docker compose logs -f callr-hub"
+mate-terminal --tab --title="callr-client" -e "docker compose logs -f callr-client"

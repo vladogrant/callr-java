@@ -1,0 +1,8 @@
+#!/bin/bash
+docker rm -f callr-client
+docker rm -f callr-hub
+docker image rm -f callr/callr-client
+docker image rm -f callr/callr-hub
+docker network rm callr
+
+

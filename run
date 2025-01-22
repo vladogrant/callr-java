@@ -1,0 +1,5 @@
+#!/bin/bash
+mate-terminal --tab --title="callr-hub" -e "java -jar callr-hub-host/target/callr-hub-host-1.0.0-SNAPSHOT.jar"
+sleep 5
+mate-terminal --tab --title="callr-client" -e "java -jar callr-client-host/target/callr-client-host-1.0.0-SNAPSHOT.jar"
+

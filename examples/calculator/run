@@ -1,0 +1,7 @@
+#!/bin/bash
+mate-terminal --tab --title="calculator-hub" -e "java -jar calculator-hub-host/target/calculator-hub-host-1.0.0-SNAPSHOT.jar"
+sleep 5
+mate-terminal --tab --title="calculator-service" -e "java -jar calculator-service-host/target/calculator-service-host-1.0.0-SNAPSHOT.jar"
+sleep 5
+mate-terminal --tab --title="calculator-client" -e "java -jar calculator-client-host/target/calculator-client-host-1.0.0-SNAPSHOT.jar"
+

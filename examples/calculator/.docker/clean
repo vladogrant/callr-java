@@ -1,0 +1,9 @@
+#!/bin/bash
+docker rm -f calculator-client
+docker rm -f calculator-service
+docker rm -f calculator-hub
+docker image rm -f callr/calculator-client
+docker image rm -f callr/calculator-service
+docker image rm -f callr/calculator-hub
+docker network rm callr-calculator
+

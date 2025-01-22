@@ -1,0 +1,45 @@
+name: callr-calculator
+
+services:
+  calculator-hub:
+    container_name: calculator-hub
+    build:
+      context: ../calculator-hub-host
+      dockerfile: Dockerfile
+    image: callr/calculator-hub
+    ports:
+      - "9443:9443"
+    restart: always
+    networks:
+      - callr-calculator
+
+  calculator-service:
+    depends_on:
+      - calculator-hub
+    container_name: calculator-service
+    tty: true
+    build:
+      context: ../calculator-service-host
+      dockerfile: Dockerfile
+    image: callr/calculator-service
+    restart: always
+    networks:
+      - callr-calculator
+      
+  calculator-client:
+    depends_on:
+      - calculator-hub
+      - calculator-service
+    container_name: calculator-client
+    tty: true
+    build:
+      context: ../calculator-client-host
+      dockerfile: Dockerfile
+    image: callr/calculator-client
+    restart: always
+    networks:
+      - callr-calculator
+      
+networks:
+  callr-calculator:
+    external: true
