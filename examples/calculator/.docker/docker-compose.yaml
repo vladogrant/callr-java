@@ -3,43 +3,49 @@ name: callr-calculator
 services:
   calculator-hub:
     container_name: calculator-hub
+    image: callr/calculator-hub
     build:
       context: ../calculator-hub-host
       dockerfile: Dockerfile
-    image: callr/calculator-hub
     ports:
       - "9443:9443"
+    healthcheck:
+      test: [ "CMD-SHELL", "echo e | telnet calculator-hub 9443" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
     restart: always
     networks:
       - callr-calculator
 
   calculator-service:
     depends_on:
-      - calculator-hub
+      calculator-hub:
+        condition: service_healthy
     container_name: calculator-service
-    tty: true
+    image: callr/calculator-service
     build:
       context: ../calculator-service-host
       dockerfile: Dockerfile
-    image: callr/calculator-service
+    tty: true
     restart: always
     networks:
       - callr-calculator
-      
+
   calculator-client:
-    depends_on:
-      - calculator-hub
-      - calculator-service
     container_name: calculator-client
-    tty: true
+    image: callr/calculator-client
     build:
       context: ../calculator-client-host
       dockerfile: Dockerfile
-    image: callr/calculator-client
+    depends_on:
+      calculator-hub:
+        condition: service_healthy
+    tty: true
     restart: always
     networks:
       - callr-calculator
-      
+
 networks:
   callr-calculator:
     external: true
