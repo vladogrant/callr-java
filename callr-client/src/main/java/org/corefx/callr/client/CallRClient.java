@@ -19,7 +19,6 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import java.io.IOException;
 import java.security.KeyStore;
-import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Map;
@@ -69,8 +68,11 @@ public class CallRClient implements AutoCloseable {
 		if(useKeystores) {
 			KeyStore trustStore = KeyStore.getInstance("jks");
 			trustStore.load(trustStoreConfig.getFile().getInputStream(), trustStoreConfig.getPassword().toCharArray());
-			sslContextBuilder.loadTrustMaterial(trustStore, (certs, s) -> {
-				return true; // NOTE: Only for testing. Not for production use.
+			sslContextBuilder.loadTrustMaterial(trustStore, new TrustStrategy() {
+				@Override
+				public boolean isTrusted(X509Certificate[] certs, String s) {
+					return true; // NOTE: Only for testing. Not for production use.
+				}
 			});
 		}
 		else {
@@ -102,7 +104,12 @@ public class CallRClient implements AutoCloseable {
 				KeyStore keyStore = KeyStore.getInstance("jks");
 				keyStore.load(keyStoreConfig.getFile().getInputStream(), keyStoreConfig.getPassword().toCharArray());
 				sslContextBuilder.loadKeyMaterial(
-						keyStore, keyStoreConfig.getPassword().toCharArray(), (map, sslParameters) -> id.toString().toUpperCase());
+						keyStore, keyStoreConfig.getPassword().toCharArray(), new PrivateKeyStrategy() {
+							@Override
+							public String chooseAlias(Map<String, PrivateKeyDetails> map, SSLParameters sslParameters) {
+								return id.toString().toUpperCase();
+							}
+						});
 			}
 			else {
 				sslContextBuilder.loadKeyMaterial(
@@ -203,7 +210,6 @@ public class CallRClient implements AutoCloseable {
 		}
 
 
-		@SuppressWarnings("NullableProblems")
 		@Override
 		public void handleTransportError(WebSocketSession session, Throwable exception) {
 			log.error(exception.getMessage(), exception);
