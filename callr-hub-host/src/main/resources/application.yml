@@ -30,10 +30,10 @@ callr:
     basic:
       secret: A6491B50-AF73-4C47-93C0-9E6AED6278DC
 
-#  authorization:
-#    user-roles:
-#      00000000-0000-0000-0000-A736F2F2FAD1:
-#        - generic
+  authorization:
+    user-roles:
+      00000000-0000-0000-0000-A736F2F2FAD1:
+        - generic
   json:
     indent: true
 logging:
