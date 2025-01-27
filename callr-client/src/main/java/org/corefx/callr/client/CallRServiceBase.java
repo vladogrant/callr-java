@@ -29,13 +29,13 @@ public abstract class CallRServiceBase implements AutoCloseable {
 
 
 	public void stop() {
-		client.disconnect();
 	}
 
 
 	@Override
 	public void close() {
 		client.disconnect();
+		stop();
 	}
 
 
@@ -75,7 +75,8 @@ public abstract class CallRServiceBase implements AutoCloseable {
 			Object result = method.invoke(this, parameterValues);
 			response.setResult(result);
 		}
-		catch(Exception ex) {
+		catch(Exception thrown) {
+			Exception ex = thrown;
 			if(ex instanceof InvocationTargetException)
 				ex = (Exception) ((InvocationTargetException) ex).getTargetException();
 			log.error(ex.getMessage(), ex);

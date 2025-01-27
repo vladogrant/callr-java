@@ -11,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 @AllArgsConstructor
 public class CalculatorServiceConfiguration {
 
-	CalculatorServiceConfigurationProperties config;
+	private final CalculatorServiceConfigurationProperties config;
 
 
 	@Bean

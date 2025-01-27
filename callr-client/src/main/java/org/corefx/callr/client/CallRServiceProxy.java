@@ -39,8 +39,8 @@ public abstract class CallRServiceProxy implements AutoCloseable {
 
 
 	@Override
-	public void close() throws Exception {
-		client.disconnect();
+	public void close() {
+		disconnect();
 	}
 
 	private void handleMessage(CallRMessage message) {
@@ -69,6 +69,7 @@ public abstract class CallRServiceProxy implements AutoCloseable {
 		client.send(request);
 		Object waitHandle = new Object();
 		waitHandles.put(requestId, waitHandle);
+		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized(waitHandle) {
 			waitHandle.wait();
 		}
@@ -78,6 +79,7 @@ public abstract class CallRServiceProxy implements AutoCloseable {
 			throw new TimeoutException();
 		if(response.getExceptionData() != null) {
 			try(ByteArrayInputStream ir = new ByteArrayInputStream(response.getExceptionData()); ObjectInputStream is = new ObjectInputStream(ir)) {
+				//noinspection UnnecessaryLocalVariable
 				Exception ex = (Exception) is.readObject();
 				throw ex;
 			}

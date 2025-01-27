@@ -2,7 +2,6 @@ package org.corefx.callr.hub;
 
 import lombok.AllArgsConstructor;
 import org.corefx.callr.configuration.GlobalConfigurationProperties;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -21,13 +20,13 @@ public class SslAuthenticationSecurityConfiguration {
 
 	private final UserDetailsService userDetailsService;
 
+
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
 		httpSecurity
 				.authorizeHttpRequests(customizer -> customizer.anyRequest().authenticated())
 				.x509(config -> config.subjectPrincipalRegex("CN=(.*?)(?:,|$)"))
 				.userDetailsService(userDetailsService);
-		;
 		return httpSecurity.build();
 	}
 

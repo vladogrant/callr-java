@@ -15,7 +15,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @AllArgsConstructor
 public class CalculatorServiceHost implements CommandLineRunner {
 
-
 	Calculator serviceBean;
 
 
@@ -42,6 +41,7 @@ public class CalculatorServiceHost implements CommandLineRunner {
 		try(Calculator service = serviceBean) {
 			((CallRServiceBase) service).start();
 			System.out.println("Press [Enter] to exit...");
+			//noinspection ResultOfMethodCallIgnored
 			System.in.read();
 		}
 	}

@@ -19,6 +19,8 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLParameters;
 import java.io.IOException;
 import java.security.KeyStore;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Base64;
 import java.util.Map;
 import java.util.UUID;
@@ -30,6 +32,8 @@ public class CallRClient implements AutoCloseable {
 
 	private final ClientConfigurationProperties config;
 
+	private static final boolean useKeystores = false;
+
 	@Getter
 	private final UUID id;
 
@@ -39,6 +43,7 @@ public class CallRClient implements AutoCloseable {
 
 	private static final ObjectMapper json = new ObjectMapper();
 	private final boolean indent;
+
 
 	public CallRClient(ClientConfigurationProperties config) {
 		this.config = config;
@@ -61,14 +66,18 @@ public class CallRClient implements AutoCloseable {
 
 		SSLContextBuilder sslContextBuilder = new SSLContextBuilder();
 		TrustStoreConfigurationProperties trustStoreConfig = config.getSsl().getTrustStore();
-		sslContextBuilder.loadTrustMaterial(
-				trustStoreConfig.getFile().getURL(),
-				trustStoreConfig.getPassword().toCharArray());
-/*
-		KeyStore trustStore = KeyStore.getInstance("jks");
-		trustStore.load(trustStoreConfig.getFile().getInputStream(), trustStoreConfig.getPassword().toCharArray());
-		sslContextBuilder.loadTrustMaterial(trustStore, null);
-*/
+		if(useKeystores) {
+			KeyStore trustStore = KeyStore.getInstance("jks");
+			trustStore.load(trustStoreConfig.getFile().getInputStream(), trustStoreConfig.getPassword().toCharArray());
+			sslContextBuilder.loadTrustMaterial(trustStore, (certs, s) -> {
+				return true; // NOTE: Only for testing. Not for production use.
+			});
+		}
+		else {
+			sslContextBuilder.loadTrustMaterial(
+					trustStoreConfig.getFile().getURL(),
+					trustStoreConfig.getPassword().toCharArray());
+		}
 
 		WebSocketHttpHeaders headers = new WebSocketHttpHeaders();
 
@@ -85,17 +94,22 @@ public class CallRClient implements AutoCloseable {
 			headers.add("Authorization", "Basic " + creds);
 		}
 		else if("ssl".equals(authConfig.getType())) {
+
 			SslAuthenticationConfigurationProperties sslAuthConfig = authConfig.getSsl();
 			KeyStoreConfigurationProperties keyStoreConfig = sslAuthConfig.getKeyStore();
-			sslContextBuilder.loadKeyMaterial(
-					keyStoreConfig.getFile().getURL(),
-					keyStoreConfig.getPassword().toCharArray(),
-					keyStoreConfig.getPassword().toCharArray());
-/*
-			KeyStore keyStore = KeyStore.getInstance("jks");
-			keyStore.load(keyStoreConfig.getFile().getInputStream(), keyStoreConfig.getPassword().toCharArray());
-			sslContextBuilder.loadKeyMaterial(keyStore,	keyStoreConfig.getPassword().toCharArray(),	(map, sslParameters) -> "localhost");
-*/
+
+			if(useKeystores) {
+				KeyStore keyStore = KeyStore.getInstance("jks");
+				keyStore.load(keyStoreConfig.getFile().getInputStream(), keyStoreConfig.getPassword().toCharArray());
+				sslContextBuilder.loadKeyMaterial(
+						keyStore, keyStoreConfig.getPassword().toCharArray(), (map, sslParameters) -> id.toString().toUpperCase());
+			}
+			else {
+				sslContextBuilder.loadKeyMaterial(
+						keyStoreConfig.getFile().getURL(),
+						keyStoreConfig.getPassword().toCharArray(),
+						keyStoreConfig.getPassword().toCharArray());
+			}
 		}
 
 		SSLContext sslContext = sslContextBuilder.build();
@@ -189,6 +203,7 @@ public class CallRClient implements AutoCloseable {
 		}
 
 
+		@SuppressWarnings("NullableProblems")
 		@Override
 		public void handleTransportError(WebSocketSession session, Throwable exception) {
 			log.error(exception.getMessage(), exception);

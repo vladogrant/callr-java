@@ -7,7 +7,6 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.context.annotation.Configuration;
 
 import java.net.URI;
-import java.util.UUID;
 
 @Setter
 @Getter

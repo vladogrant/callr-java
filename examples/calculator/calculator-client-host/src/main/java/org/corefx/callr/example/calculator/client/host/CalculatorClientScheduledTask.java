@@ -17,8 +17,6 @@ import java.text.MessageFormat;
 @Component
 public class CalculatorClientScheduledTask {
 
-	private final CalculatorClientConfigurationProperties config;
-
 	Calculator calculatorBean;
 
 
