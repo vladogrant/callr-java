@@ -9,6 +9,8 @@ import java.io.ObjectOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.stream.Stream;
 
 @Slf4j
@@ -51,6 +53,7 @@ public abstract class CallRServiceBase implements AutoCloseable {
 		response.setSender(client.getId());
 		response.setReceiver(request.getSender());
 		response.setRequest(request.getRequest());
+
 		Class<?>[] parameterTypes = new Class<?>[request.getParameters().size()];
 		try {
 			for(int i = 0; i < request.getParameters().size(); i++) {
@@ -73,12 +76,20 @@ public abstract class CallRServiceBase implements AutoCloseable {
 
 			Object[] parameterValues = request.getParameters().stream().map(Parameter::getValue).toArray();
 			Object result = method.invoke(this, parameterValues);
+
+			if(Future.class.isAssignableFrom(method.getReturnType())) {
+				@SuppressWarnings("unchecked")
+				Future<Object> future = (Future<Object>) result;
+				result = future.get();
+			}
 			response.setResult(result);
 		}
 		catch(Exception thrown) {
 			Exception ex = thrown;
 			if(ex instanceof InvocationTargetException)
 				ex = (Exception) ((InvocationTargetException) ex).getTargetException();
+			else if(ex instanceof ExecutionException)
+				ex = (Exception) ex.getCause();
 			log.error(ex.getMessage(), ex);
 			response.setException(ex);
 			try(ByteArrayOutputStream os = new ByteArrayOutputStream(); ObjectOutputStream ow = new ObjectOutputStream(os)) {

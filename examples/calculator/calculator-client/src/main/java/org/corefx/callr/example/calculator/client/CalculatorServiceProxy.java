@@ -6,6 +6,7 @@ import org.corefx.callr.client.CallRServiceProxy;
 import org.corefx.callr.example.calculator.Calculator;
 
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 public class CalculatorServiceProxy extends CallRServiceProxy implements Calculator {
 
@@ -20,18 +21,33 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 	}
 
 
+	public CompletableFuture<Void> pingAsync() {
+		return invokeAsync().thenAcceptAsync(o -> {
+		});
+	}
+
+
 	@Override
 	public int add(Integer a, Integer b) {
-		return (int)invoke(
+		return (int) invoke(
 				new Parameter("a", Integer.class.getName(), a),
 				new Parameter("b", Integer.class.getName(), b)
 		);
+	}
+
+
+	@Override
+	public CompletableFuture<Integer> addAsync(Integer a, Integer b) {
+		return invokeAsync(
+				new Parameter("a", Integer.class.getName(), a),
+				new Parameter("b", Integer.class.getName(), b)
+		).thenApply(o -> (Integer) o);
 	}
 
 
 	@Override
 	public int div(Integer a, Integer b) {
-		return (int)invoke(
+		return (int) invoke(
 				new Parameter("a", Integer.class.getName(), a),
 				new Parameter("b", Integer.class.getName(), b)
 		);
@@ -39,11 +55,30 @@ public class CalculatorServiceProxy extends CallRServiceProxy implements Calcula
 
 
 	@Override
+	public CompletableFuture<Integer> divAsync(Integer a, Integer b) {
+		return invokeAsync(
+				new Parameter("a", Integer.class.getName(), a),
+				new Parameter("b", Integer.class.getName(), b)
+		).thenApply(o -> (Integer) o);
+	}
+
+
+	@Override
 	public double div(Double a, Double b) {
-		return (double)invoke(
+		return (double) invoke(
 				new Parameter("a", Double.class.getName(), a),
 				new Parameter("b", Double.class.getName(), b)
 		);
 	}
+
+
+	@Override
+	public CompletableFuture<Double> divAsync(Double a, Double b) {
+		return invokeAsync(
+				new Parameter("a", Double.class.getName(), a),
+				new Parameter("b", Double.class.getName(), b)
+		).thenApply(o -> (Double) o);
+	}
+
 
 }

@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeoutException;
 
 public abstract class CallRServiceProxy implements AutoCloseable {
@@ -21,6 +22,8 @@ public abstract class CallRServiceProxy implements AutoCloseable {
 	private final UUID serviceId;
 
 	private final Map<UUID, Object> waitHandles = new HashMap<>();
+
+	private final Map<UUID, CompletableFuture<Object>> futures = new HashMap<>();
 
 	private final Map<UUID, ResponseMessage> responseRegistry = new HashMap<>();
 
@@ -32,8 +35,8 @@ public abstract class CallRServiceProxy implements AutoCloseable {
 		client.connect();
 	}
 
-	public void disconnect()
-	{
+
+	public void disconnect() {
 		client.disconnect();
 	}
 
@@ -43,38 +46,53 @@ public abstract class CallRServiceProxy implements AutoCloseable {
 		disconnect();
 	}
 
+
 	private void handleMessage(CallRMessage message) {
 		ResponseMessage response = (ResponseMessage) message;
-		if(!waitHandles.containsKey(response.getRequest()))
-			return;
-		responseRegistry.put(response.getRequest(), response);
-		Object waitHandle = waitHandles.get(response.getRequest());
-		synchronized(waitHandle) {
-			waitHandle.notifyAll();
+		if(waitHandles.containsKey(response.getRequest())) {
+			responseRegistry.put(response.getRequest(), response);
+			Object waitHandle = waitHandles.get(response.getRequest());
+			synchronized(waitHandle) {
+				waitHandle.notifyAll();
+			}
+		}
+		else if(futures.containsKey(response.getRequest())) {
+			complete(response);
 		}
 	}
 
 
 	@SneakyThrows
+	private void complete(ResponseMessage response) {
+		CompletableFuture<Object> future = futures.get(response.getRequest());
+		if(response.getExceptionData() != null) {
+			try(ByteArrayInputStream ir = new ByteArrayInputStream(response.getExceptionData()); ObjectInputStream is = new ObjectInputStream(ir)) {
+				//noinspection UnnecessaryLocalVariable
+				Exception ex = (Exception) is.readObject();
+				future.completeExceptionally(ex);
+			}
+		}
+		future.complete(response.getResult());
+		futures.remove(response.getRequest());
+	}
+
+
+	@SneakyThrows
 	protected Object invoke(Parameter... parameters) {
-		UUID requestId = UUID.randomUUID();
-		RequestMessage request = new RequestMessage();
-		request.setReceiver(serviceId);
-		request.setSender(client.getId());
-		request.setRequest(requestId);
-		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-		String methodName = stackTraceElements[2].getMethodName();
-		request.setOperation(methodName);
-		request.getParameters().addAll(Arrays.stream(parameters).toList());
-		client.send(request);
+		RequestMessage requestMessage = createRequestMessage(parameters);
+
+		client.send(requestMessage);
+
 		Object waitHandle = new Object();
-		waitHandles.put(requestId, waitHandle);
+		waitHandles.put(requestMessage.getRequest(), waitHandle);
 		//noinspection SynchronizationOnLocalVariableOrMethodParameter
 		synchronized(waitHandle) {
 			waitHandle.wait();
+			// waitHandle.wait(timeout);
 		}
-		waitHandles.remove(requestId);
-		ResponseMessage response = responseRegistry.get(requestId);
+		waitHandles.remove(requestMessage.getRequest());
+
+		ResponseMessage response = responseRegistry.get(requestMessage.getRequest());
 		if(response == null)
 			throw new TimeoutException();
 		if(response.getExceptionData() != null) {
@@ -85,5 +103,39 @@ public abstract class CallRServiceProxy implements AutoCloseable {
 			}
 		}
 		return response.getResult();
+
+	}
+
+
+	@SneakyThrows
+	protected CompletableFuture<Object> invokeAsync(Parameter... parameters) {
+		RequestMessage requestMessage = createRequestMessage(parameters);
+
+		CompletableFuture<Object> future = new CompletableFuture<>();
+/*
+		long timeout = 5000;
+		TimeUnit timeUnit = TimeUnit.MILLISECONDS;
+		future.orTimeout(timeout, timeUnit);
+*/
+		futures.put(requestMessage.getRequest(), future);
+
+		client.send(requestMessage);
+
+		return future;
+
+	}
+
+
+	private RequestMessage createRequestMessage(Parameter[] parameters) {
+		UUID requestId = UUID.randomUUID();
+		RequestMessage requestMessage = new RequestMessage();
+		requestMessage.setReceiver(serviceId);
+		requestMessage.setSender(client.getId());
+		requestMessage.setRequest(requestId);
+		StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+		String methodName = stackTraceElements[3].getMethodName();
+		requestMessage.setOperation(methodName);
+		requestMessage.getParameters().addAll(Arrays.stream(parameters).toList());
+		return requestMessage;
 	}
 }

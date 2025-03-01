@@ -8,7 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import java.text.MessageFormat;
+import java.util.concurrent.CompletableFuture;
 
 @Slf4j
 @AllArgsConstructor
@@ -17,43 +17,94 @@ import java.text.MessageFormat;
 @Component
 public class CalculatorClientScheduledTask {
 
-	Calculator calculatorBean;
+	Calculator calculator;
 
 
 	@Scheduled(fixedRate = Long.MAX_VALUE)
-	public void run() throws Exception {
-		try(Calculator calculator = calculatorBean) {
-			calculator.ping();
-			int a = 1;
-			int b = 2;
-			int c = calculator.add(a, b);
-			System.out.println(MessageFormat.format("{0} + {1} = {2}{3}", a, b, c, System.lineSeparator()));
+	public void run() {
 
-			a = 10;
-			b = 5;
-			c = calculator.div(a, b);
-			System.out.println(MessageFormat.format("{0} / {1} = {2}{3}", a, b, c, System.lineSeparator()));
+/*
+		calculator.ping();
+		add(1, 2);
+		div(10, 5);
+		div(6.66, 3.33);
+		div(6.66, 0.00d);
+		div(10, 0);
+*/
 
-			double da = 6.66;
-			double db = 3.33;
-			double dc = calculator.div(da, db);
-			System.out.println(MessageFormat.format("{0} / {1} = {2}{3}", da, db, dc, System.lineSeparator()));
-
-			db = 0.00;
-			dc = calculator.div(da, db);
-			System.out.println(MessageFormat.format("{0} / {1} = {2}{3}", da, db, dc, System.lineSeparator()));
-
-			b = 0;
-			try {
-				c = calculator.div(a, b);
-				System.out.println(c);
-			}
-			catch(Exception ex) {
-				log.error(ex.getMessage(), ex);
-			}
-			System.out.println(MessageFormat.format("{0} / {1} => java.lang.ArithmeticException: / by zero", a, b));
-		}
-
+		CompletableFuture<Void> pingFuture = calculator.pingAsync();
+		pingFuture.thenAcceptAsync(_unused -> {
+			log.info("Ping completed.");
+		});
+		asyncAdd(1, 2);
+		asyncDiv(10, 5);
+		asyncDiv(6.66, 3.33);
+		asyncDiv(6.66, 0.00);
+		asyncDiv(10, 0);
 	}
 
+
+	private void add(int a, int b) {
+		int c = calculator.add(a, b);
+		log.info("{} + {} = {}", a, b, c);
+	}
+
+
+	private void asyncAdd(int a, int b) {
+		CompletableFuture<Integer> future = calculator.addAsync(a, b);
+		future.thenAcceptAsync(c -> {
+			log.info("{} + {} = {} (async)", a, b, c);
+		});
+	}
+
+
+	private void div(int a, int b) {
+		int c = calculator.div(a, b);
+		log.info("{} / {} = {}", a, b, c);
+	}
+
+
+	private void asyncDiv(int a, int b) {
+		CompletableFuture<Integer> future = calculator.divAsync(a, b);
+/*
+		future.thenAcceptAsync(c -> {
+			log.info("{} / {} = {} (async)", a, b, c);
+		});
+*/
+		future.handleAsync((c, ex) -> {
+			if(c != null) {
+				log.info("{} / {} = {} (async)", a, b, c);
+			}
+			if(ex != null) {
+/*
+				if(ex instanceof CompletionException) {
+					ex = ex.getCause();
+				}
+*/
+				log.error(ex.getMessage(), ex);
+				log.info("{} / {} => {} (async)", a, b, ex.getMessage());
+			}
+			return null;
+		});
+	}
+
+
+	private void div(double a, double b) {
+		try {
+			double c = calculator.div(a, b);
+			log.info("{} / {} = {}", a, b, c);
+		}
+		catch(Exception ex) {
+			log.error(ex.getMessage(), ex);
+			log.info("{} / {} => java.lang.ArithmeticException: / by zero", a, b);
+		}
+	}
+
+
+	private void asyncDiv(double a, double b) {
+		CompletableFuture<Double> future = calculator.divAsync(a, b);
+		future.thenAcceptAsync(c -> {
+			log.info("{} / {} = {} (async)", a, b, c);
+		});
+	}
 }
