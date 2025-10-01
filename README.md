@@ -1,6 +1,6 @@
 # CallR (Java)
 ## Overview
-CallR is an open-source, object-oriented RPC library and framework that allows you to easily implement services that work seamlessly behind routers and firewalls.
+CallR is an open-source, object-oriented RPC library and framework that allows easy implementation of services that work seamlessly behind routers and firewalls.
 It frees you, your organization and customers from the need of configuring any port forwardings on the routers, firewalls, setting up VPNs etc.
 ## How it Works (The 'Passive Service' Pattern)
 A ***CallR Service (the service)***, acts as so called '***passive service***'. It runs inside the protected internal network of your customer and instead of listening for inbound connetions on some specific port, it does a secure outbuond HTTPS (Secure WebSocket) connection to a well-known, available ***CallR Hub (the hub)*** running in your network/premises/cloud. That is ***the service acts as a client of the hub***.
@@ -219,3 +219,4 @@ In the console/terminal windows of the client you can see the request/response m
 |Please, donate any amount to help the development and support of this project. Thank you!|
 |:----:|
 |[![](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=UHUNBVSX2BKVL)|
+
